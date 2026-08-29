@@ -51,22 +51,28 @@ async def analyze_file(file: UploadFile) -> dict:
     if not file.filename:
         raise HTTPException(status_code=400, detail="Arquivo sem nome.")
 
-    if not file.filename.lower().endswith(".txt"):
+    allowed_extensions = (".txt", ".pdf", ".docx")
+    if not file.filename.lower().endswith(allowed_extensions):
         raise HTTPException(
             status_code=400,
-            detail="MVP atual aceita apenas arquivos .txt.",
+            detail="Formatos suportados: TXT, PDF e DOCX.",
         )
 
+    suffix = Path(file.filename).suffix.lower()
     content = await file.read()
 
+    with NamedTemporaryFile(suffix=suffix, delete=False) as temporary:
+        temporary.write(content)
+        temporary_path = Path(temporary.name)
+
     try:
-        text = content.decode("utf-8")
-    except UnicodeDecodeError as error:
+        result = analyze_document(temporary_path)
+        result["arquivo"] = file.filename
+        return result
+    except Exception as error:
         raise HTTPException(
             status_code=400,
-            detail="Arquivo deve utilizar codificação UTF-8.",
+            detail=f"Não foi possível analisar o arquivo: {error}",
         ) from error
-
-    return analyze_text(
-        TextDocument(filename=file.filename, content=text)
-    )
+    finally:
+        temporary_path.unlink(missing_ok=True)
