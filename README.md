@@ -226,3 +226,19 @@ RESULTADO
   ↓
 REVISÃO HUMANA
 ```
+
+
+## Deploy
+
+O projeto está preparado para execução em container com Docker.
+
+```bash
+docker build -t document-intelligence-agent .
+docker run -p 8000:8000 document-intelligence-agent
+```
+
+Também foi incluída uma configuração `render.yaml` para facilitar deploy demonstrativo em plataformas compatíveis.
+
+Consulte [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+> **Importante:** uma versão pública do MVP deve utilizar apenas documentos fictícios ou não confidenciais até que sejam implementados controles adequados de segurança e retenção de dados.
