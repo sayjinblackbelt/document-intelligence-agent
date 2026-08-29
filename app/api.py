@@ -6,13 +6,20 @@ from tempfile import NamedTemporaryFile
 from fastapi import FastAPI, HTTPException, UploadFile
 from pydantic import BaseModel
 
-from .analyzer import analyze_document
+from .analyzer import analyze_document, analyze_text_content
+from .ai_analysis import analyze_with_ai
 
 app = FastAPI(
     title="Document Intelligence Agent",
     description="API demonstrativa para classificação e análise inicial de documentos.",
     version="0.2.0",
 )
+
+
+class AITextDocument(BaseModel):
+    filename: str = "documento.txt"
+    content: str
+    provider: str = "local"
 
 
 class TextDocument(BaseModel):
@@ -76,3 +83,17 @@ async def analyze_file(file: UploadFile) -> dict:
         ) from error
     finally:
         temporary_path.unlink(missing_ok=True)
+
+
+@app.post("/analyze/ai")
+def analyze_ai(document: AITextDocument) -> dict:
+    """Executa análise base e camada opcional de IA assistida."""
+    try:
+        base = analyze_text_content(document.content, document.filename)
+        assisted = analyze_with_ai(document.content, document.provider)
+        return {
+            "analise_base": base,
+            "analise_assistida": assisted,
+        }
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
