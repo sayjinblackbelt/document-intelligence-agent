@@ -29,3 +29,16 @@ def test_reject_unsupported_upload():
         files={"file": ("teste.xlsx", b"conteudo", "application/octet-stream")},
     )
     assert response.status_code == 400
+
+
+def test_analyze_ai():
+    response = client.post(
+        "/analyze/ai",
+        json={
+            "filename": "teste.txt",
+            "content": "Existe um requisito, uma pendência e um risco.",
+            "provider": "local",
+        },
+    )
+    assert response.status_code == 200
+    assert "analise_assistida" in response.json()
