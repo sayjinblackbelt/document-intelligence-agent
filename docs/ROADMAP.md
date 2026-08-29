@@ -34,7 +34,7 @@
 - análise de riscos;
 - revisão humana.
 
-### Fase 5 — Interface
+### Fase 5 — Interface ✓
 
 - upload;
 - histórico;
