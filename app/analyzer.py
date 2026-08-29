@@ -1,12 +1,12 @@
-"""Motor de análise documental do MVP."""
+"""Motor de análise documental."""
 
 from pathlib import Path
 
+from .extractors import SUPPORTED_EXTENSIONS, extract_text
 from .rules import KEYWORDS, classify_document, find_keywords
 
 
-def analyze_document(path: Path) -> dict:
-    text = path.read_text(encoding="utf-8")
+def analyze_text_content(text: str, filename: str = "documento") -> dict:
     found = find_keywords(text, KEYWORDS)
     classification = classify_document(text)
 
@@ -14,7 +14,7 @@ def analyze_document(path: Path) -> dict:
     score = round(populated_categories / len(KEYWORDS) * 100)
 
     return {
-        "arquivo": path.name,
+        "arquivo": filename,
         "tipo_documento": classification,
         "palavras_chave": found,
         "score_completude": score,
@@ -23,6 +23,15 @@ def analyze_document(path: Path) -> dict:
     }
 
 
+def analyze_document(path: Path) -> dict:
+    text = extract_text(path)
+    return analyze_text_content(text, path.name)
+
+
 def analyze_directory(directory: Path) -> list[dict]:
-    documents = sorted(directory.glob("*.txt"))
+    documents = sorted(
+        path
+        for path in directory.iterdir()
+        if path.is_file() and path.suffix.lower() in SUPPORTED_EXTENSIONS
+    )
     return [analyze_document(path) for path in documents]
