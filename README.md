@@ -151,3 +151,30 @@ JSON
 ```
 
 > PDFs digitalizados como imagem ainda exigiriam uma futura camada de OCR.
+
+
+## IA assistida
+
+A Fase 4 introduz uma camada de análise assistida desacoplada do motor principal.
+
+```text
+Documento
+   ↓
+Extração
+   ↓
+Regras determinísticas
+   ↓
+IA assistida opcional
+   ↓
+Resultado estruturado
+   ↓
+Revisão humana
+```
+
+O modo atual `local` funciona sem chave de API e demonstra a arquitetura de integração. Um endpoint externo pode ser conectado futuramente por meio de adaptadores, sem alterar o motor principal.
+
+Endpoint:
+
+- `POST /analyze/ai`
+
+A IA do projeto é assistiva: resultados não substituem revisão técnica ou decisão humana.
