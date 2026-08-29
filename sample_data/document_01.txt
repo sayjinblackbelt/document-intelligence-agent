@@ -1,0 +1,10 @@
+MEMORIAL DESCRITIVO
+
+Objeto: desenvolvimento de uma solução para organização e acompanhamento documental.
+
+Requisitos:
+- Consolidar documentos do projeto.
+- Registrar responsáveis e revisões.
+- Manter histórico das atualizações.
+
+A equipe deverá validar os documentos antes da emissão final.
