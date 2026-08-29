@@ -23,9 +23,9 @@ def test_analyze_text():
     assert response.json()["arquivo"] == "teste.txt"
 
 
-def test_reject_non_txt_upload():
+def test_reject_unsupported_upload():
     response = client.post(
         "/analyze/file",
-        files={"file": ("teste.pdf", b"conteudo", "application/pdf")},
+        files={"file": ("teste.xlsx", b"conteudo", "application/octet-stream")},
     )
     assert response.status_code == 400
