@@ -126,3 +126,28 @@ IA assistida
       ↓
 Interface Web
 ```
+
+
+## Suporte a documentos
+
+O agente agora suporta:
+
+- **TXT**
+- **PDF com texto extraível**
+- **DOCX**
+
+A extração ocorre antes da análise, permitindo que o mesmo motor de regras trabalhe sobre o texto normalizado.
+
+```text
+TXT / PDF / DOCX
+        ↓
+Extração de texto
+        ↓
+Normalização
+        ↓
+Motor de análise
+        ↓
+JSON
+```
+
+> PDFs digitalizados como imagem ainda exigiriam uma futura camada de OCR.
