@@ -1,0 +1,11 @@
+ESPECIFICAÇÃO DE REQUISITOS
+
+Sistema: controle documental.
+
+Requisitos funcionais:
+1. Registrar documentos e revisões.
+2. Permitir consulta por status.
+3. Identificar pendências críticas.
+
+A implementação deverá manter rastreabilidade das alterações.
+A definição do escopo final permanece a definir.
