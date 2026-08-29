@@ -43,3 +43,7 @@ Esta versão é um MVP demonstrativo:
 - utiliza regras determinísticas;
 - não substitui revisão humana;
 - PDF, DOCX e IA serão adicionados em fases futuras.
+
+### POST /analyze/ai
+
+Executa análise base e camada assistida. O MVP utiliza `provider: "local"`, sem dependência de API externa.
