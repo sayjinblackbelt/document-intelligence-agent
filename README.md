@@ -178,3 +178,51 @@ Endpoint:
 - `POST /analyze/ai`
 
 A IA do projeto é assistiva: resultados não substituem revisão técnica ou decisão humana.
+
+
+## Interface Web
+
+A aplicação agora possui uma interface web demonstrativa servida pelo próprio FastAPI.
+
+Após iniciar:
+
+```bash
+uvicorn app.api:app --reload
+```
+
+Abra:
+
+```text
+http://127.0.0.1:8000/
+```
+
+A interface permite:
+
+- upload de TXT, PDF ou DOCX;
+- execução da análise;
+- visualização de classificação;
+- score de completude;
+- requisitos;
+- pendências;
+- riscos;
+- JSON completo.
+
+## Fluxo completo
+
+```text
+USUÁRIO
+  ↓
+INTERFACE WEB
+  ↓
+FASTAPI
+  ↓
+EXTRAÇÃO DOCUMENTAL
+  ↓
+REGRAS
+  ↓
+IA ASSISTIDA
+  ↓
+RESULTADO
+  ↓
+REVISÃO HUMANA
+```
