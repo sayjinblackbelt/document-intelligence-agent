@@ -3,7 +3,7 @@
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from fastapi import FastAPI, HTTPException, UploadFile
+from fastapi import FastAPI, HTTPException, UploadFile\nfrom fastapi.responses import FileResponse\nfrom fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from .analyzer import analyze_document, analyze_text_content
@@ -97,3 +97,12 @@ def analyze_ai(document: AITextDocument) -> dict:
         }
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
+
+
+STATIC_DIR = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+@app.get("/", include_in_schema=False)
+def web_interface():
+    return FileResponse(STATIC_DIR / "index.html")
