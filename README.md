@@ -89,3 +89,40 @@ Todos os documentos de demonstração são fictícios. Nenhum conteúdo corporat
 ## Tecnologias
 
 Python · JSON · pytest (testes) · FastAPI (roadmap)
+
+
+## API REST
+
+A versão atual também disponibiliza uma API FastAPI.
+
+```bash
+pip install -r requirements.txt
+uvicorn app.api:app --reload
+```
+
+Endpoints iniciais:
+
+- `GET /health`
+- `POST /analyze/text`
+- `POST /analyze/file`
+
+A documentação interativa é fornecida automaticamente pelo FastAPI em `/docs`.
+
+Veja também:
+
+- [Documentação da API](docs/API.md)
+- [Roadmap](docs/ROADMAP.md)
+
+## Evolução do projeto
+
+```text
+MVP Python ✓
+      ↓
+API REST ✓
+      ↓
+PDF / DOCX
+      ↓
+IA assistida
+      ↓
+Interface Web
+```
