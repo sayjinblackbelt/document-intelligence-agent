@@ -79,20 +79,45 @@ def _deserialize(row: sqlite3.Row) -> dict[str, Any]:
 
 def list_analyses(
     limit: int = 20,
+    provider: str | None = None,
+    priority: str | None = None,
+    filename: str | None = None,
     database_path: Path | str | None = None,
 ) -> list[dict[str, Any]]:
     initialize_database(database_path)
     safe_limit = max(1, min(limit, 100))
 
+    clauses: list[str] = []
+    params: list[Any] = []
+
+    if provider:
+        clauses.append("provider = ?")
+        params.append(provider.lower())
+
+    if filename:
+        clauses.append("LOWER(filename) LIKE ?")
+        params.append(f"%{filename.lower()}%")
+
+    query = "SELECT * FROM analyses"
+    if clauses:
+        query += " WHERE " + " AND ".join(clauses)
+    query += " ORDER BY id DESC LIMIT ?"
+    params.append(safe_limit)
+
     with _connect(database_path) as connection:
-        rows = connection.execute(
-            """
-            SELECT * FROM analyses
-            ORDER BY id DESC
-            LIMIT ?
-            """,
-            (safe_limit,),
-        ).fetchall()
+        rows = connection.execute(query, params).fetchall()
+
+    records = [_deserialize(row) for row in rows]
+    if priority:
+        normalized_priority = priority.lower()
+        records = [
+            record
+            for record in records
+            if record["analise_assistida"].get("prioridade_sugerida", "").lower()
+            == normalized_priority
+        ]
+
+    return records
 
     return [_deserialize(row) for row in rows]
 
