@@ -1,6 +1,21 @@
+import json
+
 import pytest
 
 from app.ai_providers import LocalAIProvider, OllamaProvider, OpenAIProvider, get_ai_provider
+from app.ai_schema import parse_structured_analysis
+
+
+def structured_json(summary="Resumo gerado pelo modelo."):
+    return json.dumps(
+        {
+            "resumo_executivo": summary,
+            "requisitos": ["Registrar documentos"],
+            "pendencias": ["Revisar cadastro"],
+            "riscos": ["Atraso no prazo"],
+            "prioridade_sugerida": "alta",
+        }
+    )
 
 
 def test_local_provider_returns_structured_analysis():
@@ -11,12 +26,14 @@ def test_local_provider_returns_structured_analysis():
     assert result["provider"] == "local"
     assert result["modo"] == "local-demonstrativo"
     assert result["prioridade_sugerida"] == "alta"
+    assert isinstance(result["requisitos"], list)
+    assert isinstance(result["pendencias"], list)
+    assert isinstance(result["riscos"], list)
     assert result["revisao_humana_recomendada"] is True
 
 
 def test_provider_factory_returns_local_provider():
     provider = get_ai_provider("local")
-
     assert isinstance(provider, LocalAIProvider)
 
 
@@ -32,7 +49,7 @@ def test_openai_provider_requires_api_key(monkeypatch):
         OpenAIProvider()
 
 
-def test_openai_provider_sends_request_and_normalizes_response(monkeypatch):
+def test_openai_provider_sends_structured_request_and_normalizes_response(monkeypatch):
     class FakeResponse:
         def raise_for_status(self):
             return None
@@ -40,7 +57,7 @@ def test_openai_provider_sends_request_and_normalizes_response(monkeypatch):
         def json(self):
             return {
                 "choices": [
-                    {"message": {"content": "Resumo gerado pelo modelo."}}
+                    {"message": {"content": structured_json()}}
                 ]
             }
 
@@ -48,6 +65,7 @@ def test_openai_provider_sends_request_and_normalizes_response(monkeypatch):
         assert url == OpenAIProvider.endpoint
         assert headers["Authorization"] == "Bearer test-key"
         assert json["model"] == "test-model"
+        assert json["response_format"] == {"type": "json_object"}
         assert timeout == 30.0
         return FakeResponse()
 
@@ -59,22 +77,26 @@ def test_openai_provider_sends_request_and_normalizes_response(monkeypatch):
     assert result["provider"] == "openai"
     assert result["modo"] == "llm"
     assert result["model"] == "test-model"
-    assert result["resumo_executivo"] == "Resumo gerado pelo modelo."
+    assert result["requisitos"] == ["Registrar documentos"]
+    assert result["pendencias"] == ["Revisar cadastro"]
+    assert result["riscos"] == ["Atraso no prazo"]
+    assert result["prioridade_sugerida"] == "alta"
     assert result["revisao_humana_recomendada"] is True
 
 
-def test_ollama_provider_sends_request_and_normalizes_response(monkeypatch):
+def test_ollama_provider_sends_structured_request_and_normalizes_response(monkeypatch):
     class FakeResponse:
         def raise_for_status(self):
             return None
 
         def json(self):
-            return {"message": {"content": "Resumo gerado localmente."}}
+            return {"message": {"content": structured_json("Resumo local.")}}
 
     def fake_post(url, json, timeout):
         assert url == "http://ollama.local/api/chat"
         assert json["model"] == "llama-test"
         assert json["stream"] is False
+        assert json["format"] == "json"
         assert timeout == 60.0
         return FakeResponse()
 
@@ -89,11 +111,31 @@ def test_ollama_provider_sends_request_and_normalizes_response(monkeypatch):
     assert result["provider"] == "ollama"
     assert result["modo"] == "llm-local"
     assert result["model"] == "llama-test"
-    assert result["resumo_executivo"] == "Resumo gerado localmente."
+    assert result["resumo_executivo"] == "Resumo local."
+    assert result["prioridade_sugerida"] == "alta"
     assert result["revisao_humana_recomendada"] is True
 
 
 def test_provider_factory_returns_ollama_provider():
     provider = get_ai_provider("ollama")
-
     assert isinstance(provider, OllamaProvider)
+
+
+def test_parse_structured_analysis_rejects_invalid_json():
+    with pytest.raises(ValueError, match="contrato JSON estruturado"):
+        parse_structured_analysis("isto não é JSON")
+
+
+def test_parse_structured_analysis_rejects_invalid_priority():
+    invalid = json.dumps(
+        {
+            "resumo_executivo": "Teste",
+            "requisitos": [],
+            "pendencias": [],
+            "riscos": [],
+            "prioridade_sugerida": "urgente",
+        }
+    )
+
+    with pytest.raises(ValueError, match="prioridade_sugerida"):
+        parse_structured_analysis(invalid)
