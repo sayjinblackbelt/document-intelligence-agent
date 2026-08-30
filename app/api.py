@@ -3,8 +3,9 @@
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from fastapi import FastAPI, HTTPException, UploadFile
+from fastapi import FastAPI, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse, Response
+from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -14,12 +15,55 @@ from .ai_analysis import analyze_with_ai
 from .history import get_analysis, list_analyses, save_analysis
 from .report import analysis_json, analysis_markdown, analysis_pdf
 
+ALLOWED_EXTENSIONS = {".txt", ".pdf", ".docx"}
+MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+SUPPORTED_LANGUAGES = {"pt", "en", "es"}
+SUPPORTED_PROVIDERS = {"local", "openai", "ollama"}
+
+
+def validate_language(language: str) -> str:
+    normalized = language.lower()
+    if normalized not in SUPPORTED_LANGUAGES:
+        raise HTTPException(status_code=400, detail="Idiomas suportados: pt, en e es.")
+    return normalized
+
+
+def validate_provider(provider: str) -> str:
+    normalized = provider.lower()
+    if normalized not in SUPPORTED_PROVIDERS:
+        raise HTTPException(status_code=400, detail="Providers suportados: local, openai e ollama.")
+    return normalized
+
+
+async def read_upload(file: UploadFile) -> tuple[str, bytes]:
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="Arquivo sem nome.")
+    suffix = Path(file.filename).suffix.lower()
+    if suffix not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Formatos suportados: TXT, PDF e DOCX.")
+    content = await file.read(MAX_UPLOAD_BYTES + 1)
+    if len(content) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="Arquivo excede o limite de 10 MB.")
+    return suffix, content
+
 app = FastAPI(
     title="Document Intelligence Agent",
     description="API demonstrativa para classificação e análise inicial de documentos.",
-    version="0.8.0",
+    version="0.9.0",
 )
 
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Referrer-Policy", "same-origin")
+        return response
+
+
+app.add_middleware(SecurityHeadersMiddleware)
 
 class AITextDocument(BaseModel):
     filename: str = "documento.txt"
@@ -61,18 +105,7 @@ def analyze_text(document: TextDocument) -> dict:
 
 @app.post("/analyze/file")
 async def analyze_file(file: UploadFile) -> dict:
-    if not file.filename:
-        raise HTTPException(status_code=400, detail="Arquivo sem nome.")
-
-    allowed_extensions = (".txt", ".pdf", ".docx")
-    if not file.filename.lower().endswith(allowed_extensions):
-        raise HTTPException(
-            status_code=400,
-            detail="Formatos suportados: TXT, PDF e DOCX.",
-        )
-
-    suffix = Path(file.filename).suffix.lower()
-    content = await file.read()
+    suffix, content = await read_upload(file)
 
     with NamedTemporaryFile(suffix=suffix, delete=False) as temporary:
         temporary.write(content)
@@ -114,6 +147,9 @@ async def analyze_ai_file(
     with NamedTemporaryFile(suffix=suffix, delete=False) as temporary:
         temporary.write(content)
         temporary_path = Path(temporary.name)
+
+    provider = validate_provider(provider)
+    language = validate_language(language)
 
     try:
         text = extract_text(temporary_path)
@@ -158,7 +194,7 @@ def analyze_ai(document: AITextDocument) -> dict:
 
 @app.get("/history")
 def analysis_history(
-    limit: int = 20,
+    limit: int = Query(default=20, ge=1, le=100),
     provider: str | None = None,
     priority: str | None = None,
     filename: str | None = None,
