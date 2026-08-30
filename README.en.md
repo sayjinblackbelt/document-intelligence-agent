@@ -6,14 +6,14 @@
 
 ## Features
 
-- TXT, text-extractable PDF, and DOCX;
+- TXT, text-extractable PDF, scanned PDF via OCR, and DOCX;
 - deterministic classification, completeness score, requirements, pending items, and risks;
 - Local, OpenAI, and Ollama providers;
 - validated structured JSON contract;
 - SQLite analysis history with search and filters;
 - JSON, Markdown, and PDF exports;
 - web interface in Portuguese, English, and Spanish;
-- FastAPI, tests, Docker, and GitHub Actions CI.
+- FastAPI, tests, Docker, and GitHub Actions CI;\n- JWT/API-key authentication, persistent users, and user-owned history;\n- dashboard metrics, batch analysis, document comparison, and structured audit events.
 
 ## Quick start
 
