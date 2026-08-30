@@ -200,7 +200,7 @@ def test_history_export_supports_json_markdown_and_pdf():
         ("pdf", "application/pdf"),
     ]:
         response = client.get(
-            f"/history/{created['id']}/export?format={export_format}"
+            f"/history/{created['id']}/export?format={export_format}&language=en"
         )
         assert response.status_code == 200
         assert media_type in response.headers["content-type"]
