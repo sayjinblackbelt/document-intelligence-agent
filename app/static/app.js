@@ -93,18 +93,15 @@ aiForm.addEventListener('submit',async event=>{
   event.preventDefault();
   const file=document.getElementById('file').files[0];
   if(!file){aiStatus.textContent='Selecione um arquivo antes de executar a análise assistida.';return}
-  aiStatus.textContent='Lendo documento e consultando provider...';
+  aiStatus.textContent='Enviando documento e consultando provider...';
   aiResults.hidden=true;
   try{
-    if(!file.name.toLowerCase().endsWith('.txt')){
-      throw new Error('A análise assistida pela interface atualmente aceita arquivos TXT.');
-    }
-    const content=await file.text();
     const provider=document.getElementById('ai-provider').value;
-    const response=await fetch('/analyze/ai',{
+    const data=new FormData();
+    data.append('file',file);
+    const response=await fetch('/analyze/ai/file?provider='+encodeURIComponent(provider),{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({filename:file.name,content,provider})
+      body:data
     });
     const record=await response.json();
     if(!response.ok)throw new Error(record.detail||'Falha na análise assistida');
