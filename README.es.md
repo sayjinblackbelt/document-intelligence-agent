@@ -6,14 +6,14 @@
 
 ## Funciones
 
-- TXT, PDF con texto extraíble y DOCX;
+- TXT, PDF con texto extraíble, PDF escaneado mediante OCR y DOCX;
 - clasificación determinística, índice de completitud, requisitos, pendientes y riesgos;
 - proveedores Local, OpenAI y Ollama;
 - contrato JSON estructurado validado;
 - historial SQLite con búsqueda y filtros;
 - exportación JSON, Markdown y PDF;
 - interfaz en portugués, inglés y español;
-- FastAPI, pruebas, Docker y CI con GitHub Actions.
+- FastAPI, pruebas, Docker y CI con GitHub Actions;\n- autenticación JWT/API Key, usuarios persistentes e historial aislado por usuario;\n- métricas de dashboard, análisis por lotes, comparación documental y eventos de auditoría estructurados.
 
 ## Inicio rápido
 
