@@ -1,6 +1,9 @@
 const form=document.getElementById('upload-form');
 const status=document.getElementById('status');
 const results=document.getElementById('results');
+const aiForm=document.getElementById('ai-form');
+const aiStatus=document.getElementById('ai-status');
+const aiResults=document.getElementById('ai-results');
 const historyStatus=document.getElementById('history-status');
 const historyList=document.getElementById('history-list');
 const historyDetail=document.getElementById('history-detail');
@@ -84,6 +87,38 @@ form.addEventListener('submit',async event=>{
     results.hidden=false;
     status.textContent='Análise concluída: '+result.arquivo;
   }catch(error){status.textContent='Erro: '+error.message}
+});
+
+aiForm.addEventListener('submit',async event=>{
+  event.preventDefault();
+  const file=document.getElementById('file').files[0];
+  if(!file){aiStatus.textContent='Selecione um arquivo antes de executar a análise assistida.';return}
+  aiStatus.textContent='Lendo documento e consultando provider...';
+  aiResults.hidden=true;
+  try{
+    const content=await file.text();
+    const provider=document.getElementById('ai-provider').value;
+    const response=await fetch('/analyze/ai',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({filename:file.name,content,provider})
+    });
+    const record=await response.json();
+    if(!response.ok)throw new Error(record.detail||'Falha na análise assistida');
+    const analysis=record.analise_assistida||{};
+    document.getElementById('ai-title').textContent='Análise #'+record.id+' • '+record.filename;
+    document.getElementById('ai-summary').textContent=analysis.resumo_executivo||'Sem resumo disponível.';
+    document.getElementById('ai-provider-result').textContent=analysis.provider||record.provider||'—';
+    document.getElementById('ai-priority').textContent=analysis.prioridade_sugerida||'—';
+    document.getElementById('ai-model').textContent=analysis.model||'local';
+    fillList('ai-requirements',analysis.requisitos);
+    fillList('ai-pending',analysis.pendencias);
+    fillList('ai-risks',analysis.riscos);
+    aiResults.hidden=false;
+    aiStatus.textContent='Análise assistida concluída e salva no histórico.';
+    await loadHistory();
+    aiResults.scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(error){aiStatus.textContent='Erro: '+error.message}
 });
 
 document.getElementById('refresh-history').addEventListener('click',loadHistory);
