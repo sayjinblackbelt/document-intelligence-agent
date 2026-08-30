@@ -17,7 +17,7 @@ from .report import analysis_json, analysis_markdown, analysis_pdf
 app = FastAPI(
     title="Document Intelligence Agent",
     description="API demonstrativa para classificação e análise inicial de documentos.",
-    version="0.7.0",
+    version="0.8.0",
 )
 
 
@@ -25,6 +25,7 @@ class AITextDocument(BaseModel):
     filename: str = "documento.txt"
     content: str
     provider: str = "local"
+    language: str = "pt"
 
 
 class TextDocument(BaseModel):
@@ -94,6 +95,7 @@ async def analyze_file(file: UploadFile) -> dict:
 async def analyze_ai_file(
     file: UploadFile,
     provider: str = "local",
+    language: str = "pt",
 ) -> dict:
     """Extrai texto do arquivo, executa análise base e IA e persiste o resultado."""
     if not file.filename:
@@ -119,7 +121,7 @@ async def analyze_ai_file(
             raise ValueError("Não foi possível extrair texto útil do arquivo.")
 
         base = analyze_text_content(text, file.filename)
-        assisted = analyze_with_ai(text, provider)
+        assisted = analyze_with_ai(text, provider, language)
         return save_analysis(
             filename=file.filename,
             provider=provider,
@@ -142,7 +144,7 @@ def analyze_ai(document: AITextDocument) -> dict:
     """Executa análise base e camada opcional de IA assistida."""
     try:
         base = analyze_text_content(document.content, document.filename)
-        assisted = analyze_with_ai(document.content, document.provider)
+        assisted = analyze_with_ai(document.content, document.provider, document.language)
         record = save_analysis(
             filename=document.filename,
             provider=document.provider,
