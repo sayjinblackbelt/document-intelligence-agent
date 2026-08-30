@@ -104,6 +104,7 @@ app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(RateLimitMiddleware)
 
+
 class AITextDocument(BaseModel):
     filename: str = "documento.txt"
     content: str
@@ -245,7 +246,7 @@ async def analyze_ai_file(
 
 
 @app.post("/analyze/ai/batch")
-async def analyze_ai_batch(
+async async def analyze_ai_batch(
     request: Request,
     files: list[UploadFile],
     provider: str = "local",
