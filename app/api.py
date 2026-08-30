@@ -3,9 +3,10 @@
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from fastapi import FastAPI, HTTPException, Query, UploadFile
+from fastapi import FastAPI, HTTPException, Query, Request, UploadFile
 from fastapi.responses import FileResponse, Response
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -49,9 +50,32 @@ async def read_upload(file: UploadFile) -> tuple[str, bytes]:
 app = FastAPI(
     title="Document Intelligence Agent",
     description="API demonstrativa para classificação e análise inicial de documentos.",
-    version="0.9.0",
+    version="1.0.0",
 )
 
+
+
+class RateLimitMiddleware(BaseHTTPMiddleware):
+    def __init__(self, app, limit: int = 60, window_seconds: int = 60):
+        super().__init__(app)
+        self.limit = limit
+        self.window_seconds = window_seconds
+        self.requests: dict[str, list[float]] = {}
+
+    async def dispatch(self, request: Request, call_next):
+        import time
+
+        client = request.client.host if request.client else "unknown"
+        now = time.monotonic()
+        timestamps = [
+            timestamp for timestamp in self.requests.get(client, [])
+            if now - timestamp < self.window_seconds
+        ]
+        if len(timestamps) >= self.limit:
+            raise HTTPException(status_code=429, detail="Limite de requisições excedido.")
+        timestamps.append(now)
+        self.requests[client] = timestamps
+        return await call_next(request)
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
@@ -64,6 +88,8 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+app.add_middleware(RateLimitMiddleware)
 
 class AITextDocument(BaseModel):
     filename: str = "documento.txt"
@@ -116,10 +142,7 @@ async def analyze_file(file: UploadFile) -> dict:
         result["arquivo"] = file.filename
         return result
     except Exception as error:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Não foi possível analisar o arquivo: {error}",
-        ) from error
+        raise HTTPException(status_code=400, detail="Não foi possível analisar o arquivo.") from error
     finally:
         temporary_path.unlink(missing_ok=True)
 
@@ -156,10 +179,7 @@ async def analyze_ai_file(
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
     except Exception as error:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Não foi possível processar o arquivo: {error}",
-        ) from error
+        raise HTTPException(status_code=400, detail="Não foi possível processar o arquivo.") from error
     finally:
         temporary_path.unlink(missing_ok=True)
 
