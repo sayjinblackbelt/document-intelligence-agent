@@ -14,7 +14,7 @@ from .analyzer import analyze_document, analyze_text_content
 from .extractors import extract_text
 from .ai_analysis import analyze_with_ai
 from .history import get_analysis, list_analyses, save_analysis
-from .auth import api_key_fingerprint, require_api_key
+from .auth import api_key_enabled, require_user
 from .report import analysis_json, analysis_markdown, analysis_pdf
 
 ALLOWED_EXTENSIONS = {".txt", ".pdf", ".docx"}
@@ -51,7 +51,7 @@ async def read_upload(file: UploadFile) -> tuple[str, bytes]:
 app = FastAPI(
     title="Document Intelligence Agent",
     description="API demonstrativa para classificação e análise inicial de documentos.",
-    version="1.0.0",
+    version="1.1.0",
 )
 
 
@@ -115,7 +115,7 @@ def health() -> dict:
 
 @app.get("/auth/status")
 def auth_status() -> dict:
-    return {"authentication_enabled": bool(api_key_fingerprint())}
+    return {"authentication_enabled": api_key_enabled()}
 
 
 @app.post("/analyze/text")
@@ -165,7 +165,7 @@ async def analyze_ai_file(
     language: str = "pt",
 ) -> dict:
     """Extrai texto do arquivo, executa análise base e IA e persiste o resultado."""
-    require_api_key(request)
+    user = require_user(request)
     suffix, content = await read_upload(file)
 
     with NamedTemporaryFile(suffix=suffix, delete=False) as temporary:
@@ -187,6 +187,7 @@ async def analyze_ai_file(
             provider=provider,
             base_analysis=base,
             assisted_analysis=assisted,
+            owner_id=user.user_id,
         )
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
@@ -199,7 +200,7 @@ async def analyze_ai_file(
 @app.post("/analyze/ai")
 def analyze_ai(document: AITextDocument, request: Request) -> dict:
     """Executa análise base e camada opcional de IA assistida."""
-    require_api_key(request)
+    user = require_user(request)
     try:
         provider = validate_provider(document.provider)
         language = validate_language(document.language)
@@ -210,6 +211,7 @@ def analyze_ai(document: AITextDocument, request: Request) -> dict:
             provider=provider,
             base_analysis=base,
             assisted_analysis=assisted,
+            owner_id=user.user_id,
         )
         return record
     except ValueError as error:
@@ -225,21 +227,21 @@ def analysis_history(
     filename: str | None = None,
 ) -> list[dict]:
     """Lista análises recentes com filtros opcionais."""
-    require_api_key(request)
+    user = require_user(request)
     return list_analyses(
         limit=limit,
         provider=provider,
         priority=priority,
         filename=filename,
-        owner_id=api_key_fingerprint(),
+        owner_id=user.user_id,
     )
 
 
 @app.get("/history/{analysis_id}")
 def analysis_history_detail(analysis_id: int, request: Request) -> dict:
     """Retorna uma análise persistida pelo identificador."""
-    require_api_key(request)
-    record = get_analysis(analysis_id)
+    user = require_user(request)
+    record = get_analysis(analysis_id, owner_id=user.user_id)
     if not record:
         raise HTTPException(status_code=404, detail="Análise não encontrada.")
     return record
@@ -248,8 +250,8 @@ def analysis_history_detail(analysis_id: int, request: Request) -> dict:
 @app.get("/history/{analysis_id}/export")
 def export_analysis(analysis_id: int, request: Request, format: str = "json", language: str = "pt"):
     """Exporta uma análise persistida em JSON, Markdown ou PDF."""
-    require_api_key(request)
-    record = get_analysis(analysis_id)
+    user = require_user(request)
+    record = get_analysis(analysis_id, owner_id=user.user_id)
     if not record:
         raise HTTPException(status_code=404, detail="Análise não encontrada.")
 
