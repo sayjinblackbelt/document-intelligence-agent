@@ -4,10 +4,14 @@ from app.api import app
 
 client = TestClient(app)
 
+
 def test_auth_status_is_available():
     response = client.get("/auth/status")
     assert response.status_code == 200
-    assert "authentication_enabled" in response.json()
+    data = response.json()
+    assert "jwt_enabled" in data
+    assert "api_key_enabled" in data
+
 
 def test_api_key_protects_history(monkeypatch):
     monkeypatch.setenv("DOCUMENT_AGENT_API_KEY", "test-secret")
