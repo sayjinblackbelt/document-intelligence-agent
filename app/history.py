@@ -73,7 +73,7 @@ def save_analysis(
         )
         analysis_id = cursor.lastrowid
 
-    return get_analysis(analysis_id, database_path)
+    return get_analysis(analysis_id, database_path, owner_id=owner_id)
 
 
 def _deserialize(row: sqlite3.Row) -> dict[str, Any]:
