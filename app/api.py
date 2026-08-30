@@ -4,6 +4,7 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 from fastapi import FastAPI, HTTPException, Query, Request, UploadFile
+import logging
 from fastapi.responses import FileResponse, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.gzip import GZipMiddleware
@@ -53,10 +54,12 @@ async def read_upload(file: UploadFile) -> tuple[str, bytes]:
         raise HTTPException(status_code=413, detail="Arquivo excede o limite de 10 MB.")
     return suffix, content
 
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+
 app = FastAPI(
     title="Document Intelligence Agent",
     description="API demonstrativa para classificação e análise inicial de documentos.",
-    version="1.2.0",
+    version="1.3.0",
 )
 
 
