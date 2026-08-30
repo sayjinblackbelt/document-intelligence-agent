@@ -45,6 +45,8 @@ def create_access_token(user_id: str, role: str):
 
 
 def login(username: str, password: str):
+    if not jwt_enabled():
+        raise HTTPException(status_code=503, detail="Autenticação JWT não está configurada.")
     user = authenticate_user(username, password)
     if not user:
         raise HTTPException(status_code=401, detail="Credenciais inválidas.")
