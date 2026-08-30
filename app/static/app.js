@@ -22,7 +22,14 @@ async function loadHistory(){
   historyStatus.textContent='Carregando histórico...';
   historyList.innerHTML='';
   try{
-    const response=await fetch('/history?limit=20');
+    const params=new URLSearchParams({limit:'20'});
+    const filename=document.getElementById('history-search').value.trim();
+    const provider=document.getElementById('history-provider-filter').value;
+    const priority=document.getElementById('history-priority-filter').value;
+    if(filename)params.set('filename',filename);
+    if(provider)params.set('provider',provider);
+    if(priority)params.set('priority',priority);
+    const response=await fetch('/history?'+params.toString());
     const records=await response.json();
     if(!response.ok)throw new Error(records.detail||'Falha ao carregar histórico');
     if(!records.length){
@@ -130,4 +137,17 @@ aiForm.addEventListener('submit',async event=>{
 });
 
 document.getElementById('refresh-history').addEventListener('click',loadHistory);
+document.getElementById('history-provider-filter').addEventListener('change',loadHistory);
+document.getElementById('history-priority-filter').addEventListener('change',loadHistory);
+document.getElementById('history-search').addEventListener('search',loadHistory);
+document.getElementById('history-search').addEventListener('input',event=>{
+  clearTimeout(window.historySearchTimer);
+  window.historySearchTimer=setTimeout(loadHistory,300);
+});
+document.getElementById('clear-history-filters').addEventListener('click',()=>{
+  document.getElementById('history-search').value='';
+  document.getElementById('history-provider-filter').value='';
+  document.getElementById('history-priority-filter').value='';
+  loadHistory();
+});
 loadHistory();
