@@ -2,179 +2,64 @@
 
 [🇧🇷 Português](README.md) | 🇺🇸 English | [🇪🇸 Español](README.es.md)
 
-> Demonstration MVP for structured document analysis using Python, deterministic rules, assisted AI, and JSON output.
+> Structured document analysis with deterministic rules, assisted AI, persistent history, exports, and a multilingual web interface.
 
-## 🎯 Objective
+## Features
 
-Demonstrate how document-analysis processes can be partially automated, reducing repetitive work and producing structured information to support human decision-making.
+- TXT, text-extractable PDF, and DOCX;
+- deterministic classification, completeness score, requirements, pending items, and risks;
+- Local, OpenAI, and Ollama providers;
+- validated structured JSON contract;
+- SQLite analysis history with search and filters;
+- JSON, Markdown, and PDF exports;
+- web interface in Portuguese, English, and Spanish;
+- FastAPI, tests, Docker, and GitHub Actions CI.
 
-## ✅ Current capabilities
-
-The agent can:
-
-- read text documents;
-- extract basic metadata;
-- support **TXT, text-extractable PDF, and DOCX**;
-- identify requirements, pending items, and risks through configurable rules;
-- classify document types;
-- calculate a completeness score;
-- generate structured JSON reports;
-- expose analysis through a FastAPI REST API;
-- provide a demonstration web interface;
-- use an optional assisted-AI layer without replacing deterministic validation.
-
-## 🏗️ Architecture
-
-```text
-TXT / PDF / DOCX
-        ↓
-Text extraction
-        ↓
-Normalization
-        ↓
-Deterministic rules
-        ↓
-Optional assisted AI
-        ↓
-Structured result
-        ↓
-Human review
-```
-
-## 📂 Structure
-
-```text
-document-intelligence-agent/
-├── app/
-│   ├── analyzer.py
-│   ├── rules.py
-│   └── report.py
-├── sample_data/
-├── output/
-├── tests/
-├── docs/
-├── main.py
-├── requirements.txt
-└── README.md
-```
-
-## 🚀 Running locally
+## Quick start
 
 ```bash
-python main.py
-```
-
-The report is saved to:
-
-```text
-output/analysis_report.json
-```
-
-## 🌐 REST API
-
-Install dependencies and start the application:
-
-```bash
+git clone https://github.com/sayjinblackbelt/document-intelligence-agent.git
+cd document-intelligence-agent
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-uvicorn app.api:app --reload
-```
-
-Initial endpoints:
-
-- `GET /health`
-- `POST /analyze/text`
-- `POST /analyze/file`
-- `POST /analyze/ai`
-
-FastAPI provides interactive documentation at:
-
-```text
-/docs
-```
-
-See also:
-
-- [API documentation](docs/API.md)
-- [Roadmap](docs/ROADMAP.md)
-
-## 🧠 Design principle
-
-The first analysis layer is deterministic. This provides reproducibility, objective testing, and traceability.
-
-AI is an optional assistive layer and does not replace validation or human review.
-
-> **Automation supports analysis; human responsibility remains essential for technical validation and decisions.**
-
-## 🖥️ Web interface
-
-The application includes a demonstration web interface served by FastAPI.
-
-After starting the application:
-
-```bash
 uvicorn app.api:app --reload
 ```
 
 Open:
 
-```text
-http://127.0.0.1:8000/
-```
+- Web: `http://127.0.0.1:8000/`
+- API docs: `http://127.0.0.1:8000/docs`
 
-The interface supports:
+## Assisted analysis
 
-- TXT, PDF, and DOCX upload;
-- analysis execution;
-- document classification;
-- completeness score;
-- requirements;
-- pending items;
-- risks;
-- full JSON visualization.
+Select `local`, `openai`, or `ollama` and use `pt`, `en`, or `es` through the web interface or API.
 
-## 📈 Evolution
+Uploaded assisted analyses are persisted in SQLite and can be reopened, filtered, and exported.
 
-```text
-Python MVP ✓
-      ↓
-REST API ✓
-      ↓
-TXT / PDF / DOCX ✓
-      ↓
-Assisted AI ✓
-      ↓
-Web Interface ✓
-      ↓
-OCR for scanned PDFs
-      ↓
-Version comparison
-      ↓
-Advanced persistence and security
-```
+## API
 
-## 🐳 Deployment
+Main endpoints:
 
-The project is prepared for container execution with Docker:
+- `GET /health`
+- `POST /analyze/text`
+- `POST /analyze/file`
+- `POST /analyze/ai`
+- `POST /analyze/ai/file`
+- `GET /history`
+- `GET /history/{id}`
+- `GET /history/{id}/export?format=json|md|pdf`
 
-```bash
-docker build -t document-intelligence-agent .
-docker run -p 8000:8000 document-intelligence-agent
-```
+See [API documentation](docs/API.md).
 
-A `render.yaml` configuration is also included for demonstration deployments on compatible platforms.
+## Design principle
 
-See [Deployment documentation](docs/DEPLOYMENT.md).
+Automation supports analysis; human responsibility remains essential for technical validation and decisions.
 
-## 🔒 Confidentiality
+## Production note
 
-All demonstration documents are fictional.
+This repository is a portfolio/demo project. Production use should add authentication, authorization, data retention, audit controls, and safeguards for sensitive documents.
 
-A public MVP should use only fictional or non-confidential documents until appropriate controls for security, privacy, and data retention are implemented.
-
-## 🛠️ Technologies
-
-**Python · FastAPI · JSON · pytest · Docker · HTML/CSS/JavaScript**
-
-## 👨‍💻 Author
+## Author
 
 **Filipe Gimenes de Morais**
