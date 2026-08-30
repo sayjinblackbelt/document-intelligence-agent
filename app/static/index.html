@@ -1,1 +1,60 @@
-<!doctype html><html lang='pt-BR'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Document Intelligence Agent</title><link rel='stylesheet' href='/static/style.css'></head><body><main class='container'><header><p class='eyebrow'>CASE DEMONSTRATIVO</p><h1>Document Intelligence Agent</h1><p>Análise documental com regras, API e camada assistida.</p></header><section class='panel'><h2>Analisar documento</h2><form id='upload-form'><input id='file' type='file' accept='.txt,.pdf,.docx' required><button>Analisar arquivo</button></form><p id='status'></p></section><section id='results' hidden><div class='metrics'><article><span>Tipo</span><strong id='type'>—</strong></article><article><span>Score</span><strong id='score'>—</strong></article><article><span>Caracteres</span><strong id='characters'>—</strong></article></div><div class='grid'><section class='panel'><h2>Requisitos</h2><ul id='requirements'></ul></section><section class='panel'><h2>Pendências</h2><ul id='pending'></ul></section><section class='panel'><h2>Riscos</h2><ul id='risks'></ul></section></div><section class='panel'><h2>Dados completos</h2><pre id='json'></pre></section></section><footer>Dados demonstrativos • revisão humana recomendada</footer></main><script src='/static/app.js'></script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Document Intelligence Agent</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main class="container">
+    <header>
+      <p class="eyebrow">CASE DEMONSTRATIVO</p>
+      <h1>Document Intelligence Agent</h1>
+      <p>Análise documental com regras, API, IA assistida e histórico persistente.</p>
+    </header>
+
+    <section class="panel">
+      <h2>Analisar documento</h2>
+      <form id="upload-form">
+        <input id="file" type="file" accept=".txt,.pdf,.docx" required>
+        <button>Analisar arquivo</button>
+      </form>
+      <p id="status"></p>
+    </section>
+
+    <section id="results" hidden>
+      <div class="metrics">
+        <article><span>Tipo</span><strong id="type">—</strong></article>
+        <article><span>Score</span><strong id="score">—</strong></article>
+        <article><span>Caracteres</span><strong id="characters">—</strong></article>
+      </div>
+      <div class="grid">
+        <section class="panel"><h2>Requisitos</h2><ul id="requirements"></ul></section>
+        <section class="panel"><h2>Pendências</h2><ul id="pending"></ul></section>
+        <section class="panel"><h2>Riscos</h2><ul id="risks"></ul></section>
+      </div>
+      <section class="panel"><h2>Dados completos</h2><pre id="json"></pre></section>
+    </section>
+
+    <section class="panel history-panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">PERSISTÊNCIA</p>
+          <h2>Histórico de análises</h2>
+        </div>
+        <button id="refresh-history" type="button">Atualizar</button>
+      </div>
+      <p id="history-status">Carregando histórico...</p>
+      <div id="history-list" class="history-list"></div>
+      <section id="history-detail" class="history-detail" hidden>
+        <h3 id="history-title">Detalhes da análise</h3>
+        <pre id="history-json"></pre>
+      </section>
+    </section>
+
+    <footer>Dados demonstrativos • revisão humana recomendada</footer>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
