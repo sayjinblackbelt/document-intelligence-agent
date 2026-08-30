@@ -154,9 +154,19 @@ def analyze_ai(document: AITextDocument) -> dict:
 
 
 @app.get("/history")
-def analysis_history(limit: int = 20) -> list[dict]:
-    """Lista as análises mais recentes."""
-    return list_analyses(limit=limit)
+def analysis_history(
+    limit: int = 20,
+    provider: str | None = None,
+    priority: str | None = None,
+    filename: str | None = None,
+) -> list[dict]:
+    """Lista análises recentes com filtros opcionais."""
+    return list_analyses(
+        limit=limit,
+        provider=provider,
+        priority=priority,
+        filename=filename,
+    )
 
 
 @app.get("/history/{analysis_id}")
