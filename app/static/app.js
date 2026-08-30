@@ -9,6 +9,7 @@ const historyList=document.getElementById('history-list');
 const historyDetail=document.getElementById('history-detail');
 const historyTitle=document.getElementById('history-title');
 const historyJson=document.getElementById('history-json');
+let currentHistoryId=null;
 
 function fillList(id,values){
   const element=document.getElementById(id);
@@ -53,6 +54,7 @@ async function openHistory(id){
     const response=await fetch('/history/'+id);
     const record=await response.json();
     if(!response.ok)throw new Error(record.detail||'Falha ao abrir análise');
+    currentHistoryId=record.id;
     const analysis=record.analise_assistida||{};
     historyTitle.textContent='Análise #'+record.id+' • '+record.filename;
     document.getElementById('history-summary').textContent=analysis.resumo_executivo||'Sem resumo disponível.';
@@ -134,6 +136,13 @@ aiForm.addEventListener('submit',async event=>{
     await loadHistory();
     aiResults.scrollIntoView({behavior:'smooth',block:'start'});
   }catch(error){aiStatus.textContent='Erro: '+error.message}
+});
+
+document.getElementById('history-export').addEventListener('click',event=>{
+  const format=event.target.dataset.export;
+  if(format&&currentHistoryId){
+    window.open('/history/'+currentHistoryId+'/export?format='+format,'_blank');
+  }
 });
 
 document.getElementById('refresh-history').addEventListener('click',loadHistory);
