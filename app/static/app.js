@@ -96,6 +96,9 @@ aiForm.addEventListener('submit',async event=>{
   aiStatus.textContent='Lendo documento e consultando provider...';
   aiResults.hidden=true;
   try{
+    if(!file.name.toLowerCase().endsWith('.txt')){
+      throw new Error('A análise assistida pela interface atualmente aceita arquivos TXT.');
+    }
     const content=await file.text();
     const provider=document.getElementById('ai-provider').value;
     const response=await fetch('/analyze/ai',{
