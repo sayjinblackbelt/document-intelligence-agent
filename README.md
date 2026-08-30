@@ -237,7 +237,7 @@ document-intelligence-agent/
 - [x] suporte a DOCX;
 - [x] testes automatizados;
 - [x] interface web;
-- [x] camada local de IA assistida;\n- [x] arquitetura de adaptadores de IA;\n- [x] integração opcional com OpenAI;
+- [x] camada local de IA assistida;\n- [x] arquitetura de adaptadores de IA;\n- [x] integração opcional com OpenAI;\n- [x] integração opcional com Ollama;
 - [x] Docker;
 - [x] CI com GitHub Actions.
 
@@ -245,7 +245,7 @@ document-intelligence-agent/
 
 - [ ] persistência de análises;
 - [ ] autenticação e controle de acesso;
-- [x] adaptador OpenAI;\n- [ ] adaptadores para outros provedores de LLM;
+- [x] adaptador OpenAI;\n- [ ] adaptadores para outros provedores de LLM (Anthropic, Gemini etc.);
 - [ ] OCR para PDFs digitalizados;
 - [ ] comparação entre versões de documentos;
 - [ ] histórico e dashboard de análises.
