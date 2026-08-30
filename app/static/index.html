@@ -9,113 +9,125 @@
 <body>
   <main class="container">
     <header>
-      <p class="eyebrow">CASE DEMONSTRATIVO</p>
-      <h1>Document Intelligence Agent</h1>
-      <p>Análise documental com regras, API, IA assistida e histórico persistente.</p>
+      <div class="topbar">
+        <div>
+          <p class="eyebrow" data-i18n="demo">CASE DEMONSTRATIVO</p>
+          <h1>Document Intelligence Agent</h1>
+        </div>
+        <label class="language-picker" for="language-select">
+          <span data-i18n="language">Idioma</span>
+          <select id="language-select">
+            <option value="pt">Português</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+          </select>
+        </label>
+      </div>
+      <p data-i18n="subtitle">Análise documental com regras, API, IA assistida e histórico persistente.</p>
     </header>
 
     <section class="panel">
-      <h2>Analisar documento</h2>
+      <h2 data-i18n="analyzeDocument">Analisar documento</h2>
       <form id="upload-form">
         <input id="file" type="file" accept=".txt,.pdf,.docx" required>
-        <button>Analisar arquivo</button>
+        <button data-i18n="analyzeFile">Analisar arquivo</button>
       </form>
       <form id="ai-form" class="ai-form">
-        <label for="ai-provider">Análise assistida por IA</label>
+        <label for="ai-provider" data-i18n="assistedAnalysis">Análise assistida por IA</label>
         <select id="ai-provider">
-          <option value="local">Local (determinístico)</option>
+          <option value="local" data-i18n="providerLocal">Local (determinístico)</option>
           <option value="openai">OpenAI</option>
           <option value="ollama">Ollama</option>
         </select>
-        <button id="ai-submit" type="submit">Executar análise assistida</button>
+        <button id="ai-submit" type="submit" data-i18n="runAssisted">Executar análise assistida</button>
       </form>
       <p id="ai-status"></p>
       <p id="status"></p>
     </section>
 
     <section id="ai-results" class="panel" hidden>
-      <p class="eyebrow">ANÁLISE ASSISTIDA</p>
-      <h2 id="ai-title">Resultado da IA</h2>
+      <p class="eyebrow" data-i18n="assistedResult">ANÁLISE ASSISTIDA</p>
+      <h2 id="ai-title" data-i18n="aiResult">Resultado da IA</h2>
       <p id="ai-summary"></p>
       <div class="metrics">
-        <article><span>Provider</span><strong id="ai-provider-result">—</strong></article>
-        <article><span>Prioridade</span><strong id="ai-priority">—</strong></article>
-        <article><span>Modelo</span><strong id="ai-model">—</strong></article>
+        <article><span data-i18n="provider">Provider</span><strong id="ai-provider-result">—</strong></article>
+        <article><span data-i18n="priority">Prioridade</span><strong id="ai-priority">—</strong></article>
+        <article><span data-i18n="model">Modelo</span><strong id="ai-model">—</strong></article>
       </div>
       <div class="grid">
-        <section><h3>Requisitos</h3><ul id="ai-requirements"></ul></section>
-        <section><h3>Pendências</h3><ul id="ai-pending"></ul></section>
-        <section><h3>Riscos</h3><ul id="ai-risks"></ul></section>
+        <section><h3 data-i18n="requirements">Requisitos</h3><ul id="ai-requirements"></ul></section>
+        <section><h3 data-i18n="pending">Pendências</h3><ul id="ai-pending"></ul></section>
+        <section><h3 data-i18n="risks">Riscos</h3><ul id="ai-risks"></ul></section>
       </div>
     </section>
 
     <section id="results" hidden>
       <div class="metrics">
-        <article><span>Tipo</span><strong id="type">—</strong></article>
-        <article><span>Score</span><strong id="score">—</strong></article>
-        <article><span>Caracteres</span><strong id="characters">—</strong></article>
+        <article><span data-i18n="type">Tipo</span><strong id="type">—</strong></article>
+        <article><span data-i18n="score">Score</span><strong id="score">—</strong></article>
+        <article><span data-i18n="characters">Caracteres</span><strong id="characters">—</strong></article>
       </div>
       <div class="grid">
-        <section class="panel"><h2>Requisitos</h2><ul id="requirements"></ul></section>
-        <section class="panel"><h2>Pendências</h2><ul id="pending"></ul></section>
-        <section class="panel"><h2>Riscos</h2><ul id="risks"></ul></section>
+        <section class="panel"><h2 data-i18n="requirements">Requisitos</h2><ul id="requirements"></ul></section>
+        <section class="panel"><h2 data-i18n="pending">Pendências</h2><ul id="pending"></ul></section>
+        <section class="panel"><h2 data-i18n="risks">Riscos</h2><ul id="risks"></ul></section>
       </div>
-      <section class="panel"><h2>Dados completos</h2><pre id="json"></pre></section>
+      <section class="panel"><h2 data-i18n="fullData">Dados completos</h2><pre id="json"></pre></section>
     </section>
 
     <section class="panel history-panel">
       <div class="section-heading">
         <div>
-          <p class="eyebrow">PERSISTÊNCIA</p>
-          <h2>Histórico de análises</h2>
+          <p class="eyebrow" data-i18n="persistence">PERSISTÊNCIA</p>
+          <h2 data-i18n="history">Histórico de análises</h2>
         </div>
-        <button id="refresh-history" type="button">Atualizar</button>
+        <button id="refresh-history" type="button" data-i18n="refresh">Atualizar</button>
       </div>
       <div class="history-filters">
-        <input id="history-search" type="search" placeholder="Buscar por nome do documento">
+        <input id="history-search" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="Buscar por nome do documento">
         <select id="history-provider-filter">
-          <option value="">Todos os providers</option>
-          <option value="local">Local</option>
+          <option value="" data-i18n="allProviders">Todos os providers</option>
+          <option value="local" data-i18n="local">Local</option>
           <option value="openai">OpenAI</option>
           <option value="ollama">Ollama</option>
         </select>
         <select id="history-priority-filter">
-          <option value="">Todas as prioridades</option>
-          <option value="alta">Alta</option>
-          <option value="média">Média</option>
-          <option value="baixa">Baixa</option>
+          <option value="" data-i18n="allPriorities">Todas as prioridades</option>
+          <option value="alta" data-i18n="high">Alta</option>
+          <option value="média" data-i18n="medium">Média</option>
+          <option value="baixa" data-i18n="low">Baixa</option>
         </select>
-        <button id="clear-history-filters" type="button">Limpar</button>
+        <button id="clear-history-filters" type="button" data-i18n="clear">Limpar</button>
       </div>
-      <p id="history-status">Carregando histórico...</p>
+      <p id="history-status"></p>
       <div id="history-list" class="history-list"></div>
       <section id="history-detail" class="history-detail" hidden>
-        <p class="eyebrow">ANÁLISE SALVA</p>
-        <h3 id="history-title">Detalhes da análise</h3>
+        <p class="eyebrow" data-i18n="savedAnalysis">ANÁLISE SALVA</p>
+        <h3 id="history-title" data-i18n="analysisDetails">Detalhes da análise</h3>
         <p id="history-summary"></p>
         <div class="metrics">
-          <article><span>Provider</span><strong id="history-provider">—</strong></article>
-          <article><span>Prioridade</span><strong id="history-priority">—</strong></article>
-          <article><span>Data</span><strong id="history-date">—</strong></article>
+          <article><span data-i18n="provider">Provider</span><strong id="history-provider">—</strong></article>
+          <article><span data-i18n="priority">Prioridade</span><strong id="history-priority">—</strong></article>
+          <article><span data-i18n="date">Data</span><strong id="history-date">—</strong></article>
         </div>
         <div class="grid">
-          <section><h3>Requisitos</h3><ul id="history-requirements"></ul></section>
-          <section><h3>Pendências</h3><ul id="history-pending"></ul></section>
-          <section><h3>Riscos</h3><ul id="history-risks"></ul></section>
+          <section><h3 data-i18n="requirements">Requisitos</h3><ul id="history-requirements"></ul></section>
+          <section><h3 data-i18n="pending">Pendências</h3><ul id="history-pending"></ul></section>
+          <section><h3 data-i18n="risks">Riscos</h3><ul id="history-risks"></ul></section>
         </div>
         <div id="history-export" class="history-export">
           <button type="button" data-export="json">Exportar JSON</button>
-          <button type="button" data-export="md">Exportar Markdown</button>
-          <button type="button" data-export="pdf">Exportar PDF</button>
+          <button type="button" data-export="md" data-i18n="exportMarkdown">Exportar Markdown</button>
+          <button type="button" data-export="pdf" data-i18n="exportPdf">Exportar PDF</button>
         </div>
         <details class="raw-json">
-          <summary>Ver dados técnicos completos</summary>
+          <summary data-i18n="technicalData">Ver dados técnicos completos</summary>
           <pre id="history-json"></pre>
         </details>
       </section>
     </section>
 
-    <footer>Dados demonstrativos • revisão humana recomendada</footer>
+    <footer data-i18n="footer">Dados demonstrativos • revisão humana recomendada</footer>
   </main>
   <script src="/static/app.js"></script>
 </body>
