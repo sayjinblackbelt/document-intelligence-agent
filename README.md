@@ -38,32 +38,11 @@ Essa abordagem prioriza rastreabilidade e previsibilidade, permitindo evoluir o 
 
 ## Arquitetura
 
-```text
-DOCUMENTO
-    │
-    ▼
-EXTRAÇÃO DE TEXTO
-TXT / PDF / DOCX
-    │
-    ▼
-MOTOR DETERMINÍSTICO
-    ├── classificação
-    ├── requisitos
-    ├── pendências
-    └── riscos
-    │
-    ▼
-SCORE E RESULTADO BASE
-    │
-    ▼
-IA ASSISTIDA OPCIONAL
-    │
-    ▼
-RESULTADO ESTRUTURADO
-    │
-    ▼
-REVISÃO HUMANA
-```
+![Arquitetura atual do Document Intelligence Agent](docs/images/architecture.svg)
+
+O projeto separa a extração, o motor determinístico e a camada opcional de IA. O MVP atual usa apenas o provider `local`; integrações externas com LLMs permanecem como evolução futura.
+
+[Ver documentação detalhada da arquitetura →](docs/ARCHITECTURE.md)
 
 ## Stack
 
