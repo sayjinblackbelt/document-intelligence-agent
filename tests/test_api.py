@@ -99,3 +99,19 @@ def test_analyze_ai_rejects_unknown_provider():
 
     assert response.status_code == 400
     assert "Provedor não configurado" in response.json()["detail"]
+
+
+def test_analyze_ai_openai_requires_api_key(monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+
+    response = client.post(
+        "/analyze/ai",
+        json={
+            "filename": "projeto.txt",
+            "content": "Documento de teste.",
+            "provider": "openai",
+        },
+    )
+
+    assert response.status_code == 400
+    assert "OPENAI_API_KEY" in response.json()["detail"]
