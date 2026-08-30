@@ -291,7 +291,7 @@ def analyze_ai(document: AITextDocument, request: Request) -> dict:
             owner_id=user.user_id,
         )
         return record
-    except ValueError as error:
+    except (ValueError, KeyError) as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
     except Exception as error:
         raise HTTPException(status_code=400, detail="Não foi possível processar o documento.") from error
