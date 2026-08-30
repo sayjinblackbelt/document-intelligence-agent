@@ -246,7 +246,7 @@ async def analyze_ai_file(
 
 
 @app.post("/analyze/ai/batch")
-async async def analyze_ai_batch(
+async def analyze_ai_batch(
     request: Request,
     files: list[UploadFile],
     provider: str = "local",
