@@ -137,12 +137,78 @@ class OpenAIProvider(AIProvider):
         }
 
 
+class OllamaProvider(AIProvider):
+    """Adaptador para Ollama executado localmente ou em servidor privado."""
+
+    name = "ollama"
+
+    def __init__(
+        self,
+        base_url: str | None = None,
+        model: str | None = None,
+        timeout: float = 60.0,
+    ) -> None:
+        self.base_url = (
+            base_url or os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+        ).rstrip("/")
+        self.model = model or os.getenv("OLLAMA_MODEL", "llama3.2")
+        self.timeout = timeout
+
+    def analyze(self, text: str) -> dict:
+        payload = {
+            "model": self.model,
+            "stream": False,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "Você é um assistente de análise documental. "
+                        "Produza uma resposta objetiva em português, destacando "
+                        "requisitos, pendências, riscos e uma prioridade sugerida. "
+                        "Não invente informações ausentes no documento."
+                    ),
+                },
+                {"role": "user", "content": text},
+            ],
+        }
+
+        try:
+            response = httpx.post(
+                f"{self.base_url}/api/chat",
+                json=payload,
+                timeout=self.timeout,
+            )
+            response.raise_for_status()
+        except httpx.HTTPError as error:
+            raise ValueError(
+                "Falha ao consultar o Ollama. Verifique se o serviço está "
+                f"disponível em {self.base_url}: {error}"
+            ) from error
+
+        data = response.json()
+        try:
+            summary = data["message"]["content"].strip()
+        except (KeyError, AttributeError) as error:
+            raise ValueError(
+                "Resposta inesperada recebida do provider Ollama."
+            ) from error
+
+        return {
+            "modo": "llm-local",
+            "provider": self.name,
+            "model": self.model,
+            "resumo_executivo": summary,
+            "revisao_humana_recomendada": True,
+        }
+
+
 def get_ai_provider(provider: str = "local") -> AIProvider:
     """Resolve um provider configurado pelo nome."""
 
     providers = {
         "local": LocalAIProvider,
         "openai": OpenAIProvider,
+        "ollama": OllamaProvider,
     }
 
     provider_class = providers.get(provider.lower())
