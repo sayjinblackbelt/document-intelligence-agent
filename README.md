@@ -252,7 +252,7 @@ document-intelligence-agent/
 - [x] suporte a DOCX;
 - [x] testes automatizados;
 - [x] interface web;
-- [x] camada local de IA assistida;\n- [x] arquitetura de adaptadores de IA;\n- [x] integração opcional com OpenAI;\n- [x] integração opcional com Ollama;\n- [x] contrato JSON estruturado para análises de IA;
+- [x] camada local de IA assistida;\n- [x] arquitetura de adaptadores de IA;\n- [x] integração opcional com OpenAI;\n- [x] integração opcional com Ollama;\n- [x] contrato JSON estruturado para análises de IA;\n- [x] persistência SQLite e histórico de análises;
 - [x] Docker;
 - [x] CI com GitHub Actions.
 
@@ -288,3 +288,21 @@ Uma implantação pública deve utilizar apenas documentos fictícios ou não co
 ---
 
 **Document Intelligence Agent** é um projeto de portfólio focado em **Python, automação, APIs, análise documental, IA assistida e arquitetura de software**.
+
+
+## Histórico de análises
+
+As análises executadas pela rota `/analyze/ai` são persistidas localmente em SQLite.
+
+Endpoints:
+
+- `GET /history?limit=20` — lista análises recentes;
+- `GET /history/{id}` — consulta uma análise específica.
+
+Por padrão, o banco é criado em `data/analyses.db`. Para outro local:
+
+```bash
+export DATABASE_PATH=/caminho/analyses.db
+```
+
+O banco local é ignorado pelo Git.
