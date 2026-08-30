@@ -2,60 +2,107 @@
 
 ## Objetivo
 
-Separar leitura, regras, análise e apresentação para que o MVP possa evoluir sem acoplamento excessivo.
+Separar entrada, extração, regras, análise e apresentação para que o MVP possa evoluir sem acoplamento excessivo.
 
-## Camadas
+## Diagrama
+
+![Arquitetura atual do Document Intelligence Agent](images/architecture.svg)
+
+O diagrama acima representa a implementação atual. A camada de IA externa **não está implementada**: o MVP possui apenas o provider `local`, usado como demonstração e ponto de extensão para futuros adaptadores.
+
+## Fluxo principal
 
 ```text
-sample_data/
-    ↓
-app/analyzer.py
-    ↓
-app/rules.py
-    ↓
-app/report.py
-    ↓
-output/analysis_report.json
+INTERFACE WEB / API REST
+        ↓
+FastAPI
+        ↓
+TXT / PDF / DOCX
+        ↓
+extractors.py
+        ↓
+analyzer.py
+        ↓
+rules.py
+        ↓
+resultado estruturado
+        ↓
+JSON / interface web
+        ↓
+revisão humana
 ```
 
-## Responsabilidades
+A rota `/analyze/ai` adiciona uma camada opcional:
 
-### `rules.py`
-Contém palavras-chave e regras de classificação.
+```text
+texto
+  ↓
+análise base
+  ↓
+ai_analysis.py
+  ↓
+provider local demonstrativo
+  ↓
+resumo + prioridade sugerida
+  ↓
+revisão humana recomendada
+```
+
+## Componentes e responsabilidades
+
+### `api.py`
+
+Expõe a API FastAPI, recebe texto e arquivos, serve a interface web e orquestra as rotas:
+
+- `GET /health`;
+- `POST /analyze/text`;
+- `POST /analyze/file`;
+- `POST /analyze/ai`.
+
+### `extractors.py`
+
+Extrai texto dos formatos suportados:
+
+- TXT;
+- PDF via `pypdf`;
+- DOCX via `python-docx`.
 
 ### `analyzer.py`
-Lê documentos e aplica as regras.
 
-### `report.py`
-Transforma os resultados em relatório JSON.
+Centraliza a análise documental:
 
-### `main.py`
-Orquestra a execução do MVP.
+- análise de texto;
+- análise de arquivo;
+- análise de diretórios;
+- cálculo do score de completude;
+- composição do resultado estruturado.
 
-## Evolução
+### `rules.py`
 
-A arquitetura foi desenhada para permitir a substituição ou complementação das regras por um serviço de IA.
+Mantém regras explícitas e configuráveis para:
 
-```text
-Documento
-   ↓
-Extração
-   ↓
-Regras determinísticas
-   ↓
-LLM / IA (futuro)
-   ↓
-Validação
-   ↓
-JSON / API
-   ↓
-Interface
-```
+- classificação inicial do documento;
+- identificação de requisitos;
+- identificação de pendências;
+- identificação de riscos.
+
+### `ai_analysis.py`
+
+Implementa a camada opcional de IA assistida do MVP.
+
+Atualmente:
+
+- funciona com `provider="local"`;
+- não realiza chamadas externas;
+- gera resumo executivo a partir das regras locais;
+- sugere prioridade;
+- marca a revisão humana como recomendada.
 
 ## Princípios
 
-- dados fictícios;
 - resultados rastreáveis;
 - regras explícitas;
-- revisão humana;
-- separação de responsabilidades.
+- separação de responsabilidades;
+- camada de IA desacoplada;
+- evolução progressiva para provedores externos;
+- revisão humana para interpretação e decisão técnica.
