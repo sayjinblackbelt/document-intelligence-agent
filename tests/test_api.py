@@ -115,3 +115,35 @@ def test_analyze_ai_openai_requires_api_key(monkeypatch):
 
     assert response.status_code == 400
     assert "OPENAI_API_KEY" in response.json()["detail"]
+
+
+def test_analyze_ai_persists_history_record():
+    response = client.post(
+        "/analyze/ai",
+        json={
+            "filename": "historico.txt",
+            "content": "REQUISITOS: registrar documentos.",
+            "provider": "local",
+        },
+    )
+
+    assert response.status_code == 200
+    assert isinstance(response.json()["id"], int)
+
+    history = client.get(f"/history/{response.json()['id']}")
+
+    assert history.status_code == 200
+    assert history.json()["filename"] == "historico.txt"
+
+
+def test_history_returns_recent_analyses():
+    response = client.get("/history?limit=5")
+
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+
+
+def test_history_returns_404_for_unknown_analysis():
+    response = client.get("/history/999999")
+
+    assert response.status_code == 404
