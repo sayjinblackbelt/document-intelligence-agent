@@ -39,7 +39,7 @@ def validate_language(language: str) -> str:
 def validate_provider(provider: str) -> str:
     normalized = provider.lower()
     if normalized not in SUPPORTED_PROVIDERS:
-        raise HTTPException(status_code=400, detail="Providers suportados: local, openai e ollama.")
+        raise ValueError(f"Provedor não configurado: {provider}")
     return normalized
 
 
@@ -278,9 +278,10 @@ async def analyze_ai_batch(
 def analyze_ai(document: AITextDocument, request: Request) -> dict:
     """Executa análise base e camada opcional de IA assistida."""
     user = require_user(request)
+    provider = validate_provider(document.provider)
+    language = validate_language(document.language)
     try:
-        provider = validate_provider(document.provider)
-        language = validate_language(document.language)
+        
         base = analyze_text_content(document.content, document.filename)
         assisted = analyze_with_ai(document.content, provider, language)
         record = save_analysis(
@@ -291,8 +292,8 @@ def analyze_ai(document: AITextDocument, request: Request) -> dict:
             owner_id=user.user_id,
         )
         return record
-    except (ValueError, KeyError) as error:
-        raise HTTPException(status_code=400, detail=str(error)) from error
+    except HTTPException:
+        raise
     except Exception as error:
         raise HTTPException(status_code=400, detail="Não foi possível processar o documento.") from error
 
