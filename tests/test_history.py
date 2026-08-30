@@ -77,3 +77,38 @@ def test_list_analyses_limits_results(tmp_path: Path):
     records = list_analyses(limit=2, database_path=database)
 
     assert len(records) == 2
+
+
+def test_list_analyses_filters_by_provider_filename_and_priority(tmp_path: Path):
+    database = tmp_path / "history.db"
+
+    high_priority = sample_assisted()
+    high_priority["prioridade_sugerida"] = "alta"
+    save_analysis(
+        "contrato-final.txt",
+        "openai",
+        sample_base(),
+        high_priority,
+        database,
+    )
+
+    low_priority = sample_assisted()
+    low_priority["prioridade_sugerida"] = "baixa"
+    save_analysis(
+        "relatorio.txt",
+        "local",
+        sample_base(),
+        low_priority,
+        database,
+    )
+
+    records = list_analyses(
+        provider="openai",
+        filename="contrato",
+        priority="alta",
+        database_path=database,
+    )
+
+    assert len(records) == 1
+    assert records[0]["filename"] == "contrato-final.txt"
+    assert records[0]["provider"] == "openai"
