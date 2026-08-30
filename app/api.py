@@ -3,7 +3,9 @@
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from fastapi import FastAPI, HTTPException, UploadFile\nfrom fastapi.responses import FileResponse\nfrom fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI, HTTPException, UploadFile
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from .analyzer import analyze_document, analyze_text_content
