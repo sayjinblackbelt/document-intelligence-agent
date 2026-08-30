@@ -2,120 +2,58 @@
 
 [🇧🇷 Português](README.md) | [🇺🇸 English](README.en.md) | 🇪🇸 Español
 
-> MVP demostrativo para análisis estructurado de documentos mediante Python, reglas determinísticas, IA asistida y salida en JSON.
+> Análisis documental estructurado con reglas determinísticas, IA asistida, historial persistente, exportaciones e interfaz web multilingüe.
 
-## 🎯 Objetivo
+## Funciones
 
-Demostrar cómo los procesos de análisis documental pueden automatizarse parcialmente, reduciendo tareas repetitivas y generando información estructurada para apoyar la toma de decisiones humanas.
+- TXT, PDF con texto extraíble y DOCX;
+- clasificación determinística, índice de completitud, requisitos, pendientes y riesgos;
+- proveedores Local, OpenAI y Ollama;
+- contrato JSON estructurado validado;
+- historial SQLite con búsqueda y filtros;
+- exportación JSON, Markdown y PDF;
+- interfaz en portugués, inglés y español;
+- FastAPI, pruebas, Docker y CI con GitHub Actions.
 
-## ✅ Capacidades actuales
-
-El agente puede:
-
-- leer documentos de texto;
-- extraer metadatos básicos;
-- admitir **TXT, PDF con texto extraíble y DOCX**;
-- identificar requisitos, pendientes y riesgos mediante reglas configurables;
-- clasificar tipos de documentos;
-- calcular un índice de completitud;
-- generar informes estructurados en JSON;
-- exponer el análisis mediante una API REST con FastAPI;
-- ofrecer una interfaz web demostrativa;
-- utilizar una capa opcional de IA asistida sin sustituir la validación determinística.
-
-## 🏗️ Arquitectura
-
-```text
-TXT / PDF / DOCX
-        ↓
-Extracción de texto
-        ↓
-Normalización
-        ↓
-Reglas determinísticas
-        ↓
-IA asistida opcional
-        ↓
-Resultado estructurado
-        ↓
-Revisión humana
-```
-
-## 🚀 Ejecución local
+## Inicio rápido
 
 ```bash
-python main.py
-```
-
-## 🌐 API REST
-
-```bash
+git clone https://github.com/sayjinblackbelt/document-intelligence-agent.git
+cd document-intelligence-agent
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.api:app --reload
 ```
 
-Endpoints iniciales:
+Abra:
+
+- Web: `http://127.0.0.1:8000/`
+- Documentación API: `http://127.0.0.1:8000/docs`
+
+## Análisis asistido
+
+Seleccione `local`, `openai` u `ollama` y use `pt`, `en` o `es` desde la interfaz o la API.
+
+Los análisis asistidos se guardan en SQLite y pueden consultarse, filtrarse y exportarse.
+
+## API
 
 - `GET /health`
 - `POST /analyze/text`
 - `POST /analyze/file`
 - `POST /analyze/ai`
+- `POST /analyze/ai/file`
+- `GET /history`
+- `GET /history/{id}`
+- `GET /history/{id}/export?format=json|md|pdf`
 
-La documentación interactiva está disponible en `/docs`.
+Consulte la [documentación de la API](docs/API.md).
 
-## 🧠 Principio de diseño
+## Principio de diseño
 
-La primera capa de análisis es determinística, proporcionando reproducibilidad, pruebas objetivas y trazabilidad.
+La automatización apoya el análisis; la responsabilidad humana sigue siendo esencial para las validaciones y decisiones técnicas.
 
-La IA es una capa asistiva y no sustituye la validación ni la revisión humana.
-
-## 🖥️ Interfaz web
-
-La aplicación incluye una interfaz web demostrativa que permite:
-
-- cargar TXT, PDF y DOCX;
-- ejecutar análisis;
-- visualizar clasificación;
-- consultar el índice de completitud;
-- revisar requisitos, pendientes y riesgos;
-- visualizar el JSON completo.
-
-## 📈 Evolución
-
-```text
-MVP Python ✓
-      ↓
-API REST ✓
-      ↓
-TXT / PDF / DOCX ✓
-      ↓
-IA asistida ✓
-      ↓
-Interfaz Web ✓
-      ↓
-OCR para PDF escaneado
-      ↓
-Comparación entre versiones
-      ↓
-Persistencia y seguridad avanzada
-```
-
-## 🐳 Despliegue
-
-El proyecto está preparado para ejecutarse en contenedores con Docker.
-
-También incluye una configuración `render.yaml` para despliegues demostrativos en plataformas compatibles.
-
-## 🔒 Confidencialidad
-
-Todos los documentos de demostración son ficticios.
-
-Una versión pública del MVP debe utilizar únicamente documentos ficticios o no confidenciales hasta implementar controles adecuados de seguridad, privacidad y retención de datos.
-
-## 🛠️ Tecnologías
-
-**Python · FastAPI · JSON · pytest · Docker · HTML/CSS/JavaScript**
-
-## 👨‍💻 Autor
+## Autor
 
 **Filipe Gimenes de Morais**
