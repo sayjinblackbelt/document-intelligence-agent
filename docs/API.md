@@ -1,13 +1,13 @@
 # API — Document Intelligence Agent
 
-## Executar
+## Run
 
 ```bash
 pip install -r requirements.txt
 uvicorn app.api:app --reload
 ```
 
-A documentação interativa estará disponível em:
+Interactive documentation:
 
 - `/docs`
 - `/redoc`
@@ -15,35 +15,66 @@ A documentação interativa estará disponível em:
 ## Endpoints
 
 ### GET /health
-
-Verifica o funcionamento do serviço.
+Checks service availability.
 
 ### POST /analyze/text
+Analyzes text sent as JSON.
 
-Analisa conteúdo enviado como JSON.
+### POST /analyze/file
+Uploads and analyzes `.txt`, text-extractable `.pdf`, or `.docx`.
 
-Exemplo:
+### POST /analyze/ai
+Runs deterministic analysis plus the selected provider.
+
+Example:
 
 ```json
 {
-  "filename": "documento.txt",
-  "content": "O requisito deverá ser validado. Existe uma pendência."
+  "filename": "document.txt",
+  "content": "REQUIREMENTS: register documents. RISK: delay.",
+  "provider": "local",
+  "language": "en"
 }
 ```
 
-### POST /analyze/file
+Supported languages: `pt`, `en`, `es`.
 
-Recebe um arquivo `.txt` UTF-8.
+### POST /analyze/ai/file
+Uploads TXT/PDF/DOCX, extracts text, runs assisted analysis, and persists history.
 
-## Limites atuais
+Query parameters:
 
-Esta versão é um MVP demonstrativo:
+- `provider=local|openai|ollama`
+- `language=pt|en|es`
 
-- aceita texto e arquivos TXT;
-- utiliza regras determinísticas;
-- não substitui revisão humana;
-- PDF, DOCX e IA serão adicionados em fases futuras.
+### GET /history
+Lists persisted analyses.
 
-### POST /analyze/ai
+Optional filters:
 
-Executa análise base e camada assistida. O MVP utiliza `provider: "local"`, sem dependência de API externa.
+- `limit`
+- `provider`
+- `priority`
+- `filename`
+
+### GET /history/{id}
+Returns one persisted analysis.
+
+### GET /history/{id}/export
+Exports a saved analysis.
+
+Supported formats:
+
+- `json`
+- `md`
+- `pdf`
+
+Example:
+
+```
+/history/12/export?format=pdf
+```
+
+## Current limits
+
+This is a demonstration MVP. Scanned PDFs require OCR, and authentication, access control, retention policies, and sensitive-data controls should be implemented before production use.
