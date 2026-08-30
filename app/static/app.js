@@ -46,7 +46,15 @@ async function openHistory(id){
     const response=await fetch('/history/'+id);
     const record=await response.json();
     if(!response.ok)throw new Error(record.detail||'Falha ao abrir análise');
+    const analysis=record.analise_assistida||{};
     historyTitle.textContent='Análise #'+record.id+' • '+record.filename;
+    document.getElementById('history-summary').textContent=analysis.resumo_executivo||'Sem resumo disponível.';
+    document.getElementById('history-provider').textContent=analysis.provider||record.provider||'—';
+    document.getElementById('history-priority').textContent=analysis.prioridade_sugerida||'—';
+    document.getElementById('history-date').textContent=formatDate(record.created_at);
+    fillList('history-requirements',analysis.requisitos);
+    fillList('history-pending',analysis.pendencias);
+    fillList('history-risks',analysis.riscos);
     historyJson.textContent=JSON.stringify(record,null,2);
     historyDetail.hidden=false;
     historyDetail.scrollIntoView({behavior:'smooth',block:'nearest'});
