@@ -74,8 +74,23 @@
       <p id="history-status">Carregando histórico...</p>
       <div id="history-list" class="history-list"></div>
       <section id="history-detail" class="history-detail" hidden>
+        <p class="eyebrow">ANÁLISE SALVA</p>
         <h3 id="history-title">Detalhes da análise</h3>
-        <pre id="history-json"></pre>
+        <p id="history-summary"></p>
+        <div class="metrics">
+          <article><span>Provider</span><strong id="history-provider">—</strong></article>
+          <article><span>Prioridade</span><strong id="history-priority">—</strong></article>
+          <article><span>Data</span><strong id="history-date">—</strong></article>
+        </div>
+        <div class="grid">
+          <section><h3>Requisitos</h3><ul id="history-requirements"></ul></section>
+          <section><h3>Pendências</h3><ul id="history-pending"></ul></section>
+          <section><h3>Riscos</h3><ul id="history-risks"></ul></section>
+        </div>
+        <details class="raw-json">
+          <summary>Ver dados técnicos completos</summary>
+          <pre id="history-json"></pre>
+        </details>
       </section>
     </section>
 
