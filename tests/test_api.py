@@ -147,3 +147,38 @@ def test_history_returns_404_for_unknown_analysis():
     response = client.get("/history/999999")
 
     assert response.status_code == 404
+
+
+def test_analyze_ai_file_accepts_txt_upload():
+    response = client.post(
+        "/analyze/ai/file?provider=local",
+        files={
+            "file": (
+                "assistido.txt",
+                b"REQUISITOS: registrar documentos. RISCO: atraso.",
+                "text/plain",
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["filename"] == "assistido.txt"
+    assert data["provider"] == "local"
+    assert "analise_assistida" in data
+
+
+def test_analyze_ai_file_rejects_unsupported_extension():
+    response = client.post(
+        "/analyze/ai/file",
+        files={
+            "file": (
+                "assistido.md",
+                b"# Documento",
+                "text/markdown",
+            )
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Formatos suportados: TXT, PDF e DOCX."
