@@ -138,6 +138,10 @@ def auth_register(payload: UserCreateRequest, request: Request) -> dict:
     current = require_user(request)
     if current.role != "admin":
         raise HTTPException(status_code=403, detail="Acesso negado.")
+    if payload.role not in {"admin", "user"}:
+        raise HTTPException(status_code=400, detail="Perfil inválido.")
+    if len(payload.username.strip()) < 3 or len(payload.password) < 8:
+        raise HTTPException(status_code=400, detail="Usuário ou senha não atendem aos requisitos mínimos.")
     try:
         user = create_user(payload.username, payload.password, payload.role)
         return {"id": user["id"], "username": user["username"], "role": user["role"]}
