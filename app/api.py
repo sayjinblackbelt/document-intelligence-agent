@@ -9,13 +9,14 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from .analyzer import analyze_document, analyze_text_content
+from .extractors import extract_text
 from .ai_analysis import analyze_with_ai
 from .history import get_analysis, list_analyses, save_analysis
 
 app = FastAPI(
     title="Document Intelligence Agent",
     description="API demonstrativa para classificação e análise inicial de documentos.",
-    version="0.5.0",
+    version="0.6.0",
 )
 
 
@@ -83,6 +84,53 @@ async def analyze_file(file: UploadFile) -> dict:
         raise HTTPException(
             status_code=400,
             detail=f"Não foi possível analisar o arquivo: {error}",
+        ) from error
+    finally:
+        temporary_path.unlink(missing_ok=True)
+
+
+@app.post("/analyze/ai/file")
+async def analyze_ai_file(
+    file: UploadFile,
+    provider: str = "local",
+) -> dict:
+    """Extrai texto do arquivo, executa análise base e IA e persiste o resultado."""
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="Arquivo sem nome.")
+
+    allowed_extensions = (".txt", ".pdf", ".docx")
+    if not file.filename.lower().endswith(allowed_extensions):
+        raise HTTPException(
+            status_code=400,
+            detail="Formatos suportados: TXT, PDF e DOCX.",
+        )
+
+    suffix = Path(file.filename).suffix.lower()
+    content = await file.read()
+
+    with NamedTemporaryFile(suffix=suffix, delete=False) as temporary:
+        temporary.write(content)
+        temporary_path = Path(temporary.name)
+
+    try:
+        text = extract_text(temporary_path)
+        if not text.strip():
+            raise ValueError("Não foi possível extrair texto útil do arquivo.")
+
+        base = analyze_text_content(text, file.filename)
+        assisted = analyze_with_ai(text, provider)
+        return save_analysis(
+            filename=file.filename,
+            provider=provider,
+            base_analysis=base,
+            assisted_analysis=assisted,
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    except Exception as error:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Não foi possível processar o arquivo: {error}",
         ) from error
     finally:
         temporary_path.unlink(missing_ok=True)
