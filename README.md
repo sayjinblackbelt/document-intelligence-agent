@@ -135,4 +135,13 @@ Este projeto é demonstrativo. Antes de uso em produção, recomenda-se implemen
 
 ## Autor
 
-**Filipe Gimenes de Morais**
+**Filipe G Morais**
+
+---
+
+## Author
+
+**Filipe G Morais**
+
+GitHub: https://github.com/sayjinblackbelt  
+Repository: https://github.com/sayjinblackbelt/document-intelligence-agent
