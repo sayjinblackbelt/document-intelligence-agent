@@ -1,108 +1,28 @@
 # Arquitetura — Document Intelligence Agent
 
-## Objetivo
+## Visão geral
 
-Separar entrada, extração, regras, análise e apresentação para que o MVP possa evoluir sem acoplamento excessivo.
+Web UI / REST API → FastAPI → validação de upload → extração TXT/PDF/DOCX → análise determinística → Local/OpenAI/Ollama → JSON validado → SQLite → histórico, filtros e exportação.
 
-## Diagrama
+## Camadas
 
-![Arquitetura atual do Document Intelligence Agent](images/architecture.svg)
-
-O diagrama acima representa a implementação atual. A camada de IA externa **não está implementada**: o MVP possui apenas o provider `local`, usado como demonstração e ponto de extensão para futuros adaptadores.
-
-## Fluxo principal
-
-```text
-INTERFACE WEB / API REST
-        ↓
-FastAPI
-        ↓
-TXT / PDF / DOCX
-        ↓
-extractors.py
-        ↓
-analyzer.py
-        ↓
-rules.py
-        ↓
-resultado estruturado
-        ↓
-JSON / interface web
-        ↓
-revisão humana
-```
-
-A rota `/analyze/ai` adiciona uma camada opcional:
-
-```text
-texto
-  ↓
-análise base
-  ↓
-ai_analysis.py
-  ↓
-provider local demonstrativo
-  ↓
-resumo + prioridade sugerida
-  ↓
-revisão humana recomendada
-```
-
-## Componentes e responsabilidades
-
-### `api.py`
-
-Expõe a API FastAPI, recebe texto e arquivos, serve a interface web e orquestra as rotas:
-
-- `GET /health`;
-- `POST /analyze/text`;
-- `POST /analyze/file`;
-- `POST /analyze/ai`.
-
-### `extractors.py`
-
-Extrai texto dos formatos suportados:
-
-- TXT;
-- PDF via `pypdf`;
-- DOCX via `python-docx`.
-
-### `analyzer.py`
-
-Centraliza a análise documental:
-
-- análise de texto;
-- análise de arquivo;
-- análise de diretórios;
-- cálculo do score de completude;
-- composição do resultado estruturado.
-
-### `rules.py`
-
-Mantém regras explícitas e configuráveis para:
-
-- classificação inicial do documento;
-- identificação de requisitos;
-- identificação de pendências;
-- identificação de riscos.
-
-### `ai_analysis.py`
-
-Implementa a camada opcional de IA assistida do MVP.
-
-Atualmente:
-
-- funciona com `provider="local"`;
-- não realiza chamadas externas;
-- gera resumo executivo a partir das regras locais;
-- sugere prioridade;
-- marca a revisão humana como recomendada.
+- **API (`api.py`)**: valida entrada, orquestra fluxos e serve a interface.
+- **Extraction (`extractors.py`)**: TXT, PDF com texto e DOCX.
+- **Analysis (`analyzer.py`, `rules.py`)**: classificação e indicadores explícitos.
+- **AI (`ai_analysis.py`, `ai_providers.py`, `ai_schema.py`)**: providers desacoplados e contrato JSON validado.
+- **Persistence (`history.py`)**: SQLite e filtros.
+- **Reporting (`report.py`)**: JSON, Markdown e PDF.
+- **Web (`static/`)**: interface responsiva em PT/EN/ES.
 
 ## Princípios
 
-- resultados rastreáveis;
-- regras explícitas;
 - separação de responsabilidades;
-- camada de IA desacoplada;
-- evolução progressiva para provedores externos;
-- revisão humana para interpretação e decisão técnica.
+- regras rastreáveis;
+- validação de contrato;
+- limites explícitos de entrada;
+- revisão humana para decisões;
+- evolução incremental para produção.
+
+## Limitações atuais
+
+PDFs escaneados ainda precisam de OCR. O SQLite é adequado ao MVP; produção multiusuário deve considerar banco gerenciado, autenticação e auditoria.
