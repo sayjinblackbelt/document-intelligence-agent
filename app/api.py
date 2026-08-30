@@ -20,6 +20,7 @@ from .report import analysis_json, analysis_markdown, analysis_pdf
 from .dashboard import dashboard_metrics
 from .batch import analyze_paths
 from .comparison import compare_analyses
+from .audit import audit
 
 ALLOWED_EXTENSIONS = {".txt", ".pdf", ".docx"}
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
@@ -138,7 +139,9 @@ def auth_status_endpoint() -> dict:
 
 @app.post("/auth/login")
 def auth_login(credentials: LoginRequest) -> dict:
-    return login(credentials.username, credentials.password)
+    result = login(credentials.username, credentials.password)
+    audit("login_success", username=credentials.username)
+    return result
 
 
 @app.post("/auth/register")
@@ -221,13 +224,15 @@ async def analyze_ai_file(
 
         base = analyze_text_content(text, file.filename)
         assisted = analyze_with_ai(text, provider, language)
-        return save_analysis(
+        record = save_analysis(
             filename=file.filename,
             provider=provider,
             base_analysis=base,
             assisted_analysis=assisted,
             owner_id=user.user_id,
         )
+        audit("analysis_created", user_id=user.user_id, analysis_id=record["id"], provider=provider)
+        return record
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
     except Exception as error:
