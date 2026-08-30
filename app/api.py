@@ -218,13 +218,14 @@ def analysis_history_detail(analysis_id: int) -> dict:
 
 
 @app.get("/history/{analysis_id}/export")
-def export_analysis(analysis_id: int, format: str = "json"):
+def export_analysis(analysis_id: int, format: str = "json", language: str = "pt"):
     """Exporta uma análise persistida em JSON, Markdown ou PDF."""
     record = get_analysis(analysis_id)
     if not record:
         raise HTTPException(status_code=404, detail="Análise não encontrada.")
 
     normalized = format.lower()
+    language = validate_language(language)
     filename = Path(record["filename"]).stem or "analysis"
 
     if normalized == "json":
@@ -235,13 +236,13 @@ def export_analysis(analysis_id: int, format: str = "json"):
         )
     if normalized in {"md", "markdown"}:
         return Response(
-            analysis_markdown(record),
+            analysis_markdown(record, language=language),
             media_type="text/markdown; charset=utf-8",
             headers={"Content-Disposition": f'attachment; filename="{filename}-analysis.md"'},
         )
     if normalized == "pdf":
         return Response(
-            analysis_pdf(record),
+            analysis_pdf(record, language=language),
             media_type="application/pdf",
             headers={"Content-Disposition": f'attachment; filename="{filename}-analysis.pdf"'},
         )
