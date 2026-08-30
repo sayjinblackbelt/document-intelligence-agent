@@ -253,6 +253,7 @@ document-intelligence-agent/
 - [x] testes automatizados;
 - [x] interface web;
 - [x] camada local de IA assistida;\n- [x] arquitetura de adaptadores de IA;\n- [x] integração opcional com OpenAI;\n- [x] integração opcional com Ollama;\n- [x] contrato JSON estruturado para análises de IA;\n- [x] persistência SQLite e histórico de análises;
+- [x] análise assistida de TXT, PDF e DOCX pela interface web;
 - [x] Docker;
 - [x] CI com GitHub Actions.
 
@@ -306,3 +307,14 @@ export DATABASE_PATH=/caminho/analyses.db
 ```
 
 O banco local é ignorado pelo Git.
+
+
+## Análise assistida de arquivos
+
+A interface web envia diretamente arquivos TXT, PDF e DOCX para:
+
+```
+POST /analyze/ai/file?provider=local
+```
+
+O backend extrai o texto, executa a análise base, consulta o provider selecionado e persiste o resultado no histórico.
