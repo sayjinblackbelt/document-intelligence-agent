@@ -33,6 +33,9 @@ def initialize_database(database_path: Path | str | None = None) -> None:
             )
             """
         )
+        connection.execute("CREATE INDEX IF NOT EXISTS idx_analyses_provider ON analyses(provider)")
+        connection.execute("CREATE INDEX IF NOT EXISTS idx_analyses_filename ON analyses(filename)")
+        connection.execute("CREATE INDEX IF NOT EXISTS idx_analyses_created_at ON analyses(created_at)")
 
 
 def save_analysis(
