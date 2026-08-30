@@ -7,15 +7,12 @@ from datetime import UTC, datetime, timedelta
 
 import jwt
 from fastapi import HTTPException, Request
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from .users import authenticate_user
 
 API_KEY_ENV = "DOCUMENT_AGENT_API_KEY"
 JWT_SECRET_ENV = "JWT_SECRET"
 JWT_ALGORITHM = "HS256"
-security = HTTPBearer(auto_error=False)
-
 
 @dataclass(frozen=True)
 class AuthenticatedUser:
