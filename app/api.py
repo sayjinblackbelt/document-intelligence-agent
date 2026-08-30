@@ -278,10 +278,9 @@ async def analyze_ai_batch(
 def analyze_ai(document: AITextDocument, request: Request) -> dict:
     """Executa análise base e camada opcional de IA assistida."""
     user = require_user(request)
-    provider = validate_provider(document.provider)
-    language = validate_language(document.language)
     try:
-        
+        provider = validate_provider(document.provider)
+        language = validate_language(document.language)
         base = analyze_text_content(document.content, document.filename)
         assisted = analyze_with_ai(document.content, provider, language)
         record = save_analysis(
@@ -294,6 +293,8 @@ def analyze_ai(document: AITextDocument, request: Request) -> dict:
         return record
     except HTTPException:
         raise
+    except (ValueError, KeyError) as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
     except Exception as error:
         raise HTTPException(status_code=400, detail="Não foi possível processar o documento.") from error
 
