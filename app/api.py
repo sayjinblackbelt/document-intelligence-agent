@@ -72,7 +72,11 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             if now - timestamp < self.window_seconds
         ]
         if len(timestamps) >= self.limit:
-            raise HTTPException(status_code=429, detail="Limite de requisições excedido.")
+            return Response(
+                content='{"detail":"Limite de requisições excedido."}',
+                status_code=429,
+                media_type="application/json",
+            )
         timestamps.append(now)
         self.requests[client] = timestamps
         return await call_next(request)
