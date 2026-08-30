@@ -54,3 +54,9 @@ def test_ai_file_rejects_oversized_upload():
 def test_security_headers_are_present():
     response = client.get("/health")
     assert response.headers["x-content-type-options"] == "nosniff"
+
+
+def test_health_has_frame_and_referrer_headers():
+    response = client.get("/health")
+    assert response.headers["x-frame-options"] == "DENY"
+    assert response.headers["referrer-policy"] == "same-origin"
