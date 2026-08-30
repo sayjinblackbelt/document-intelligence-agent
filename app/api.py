@@ -1,10 +1,10 @@
 """API REST demonstrativa para análise documental."""
 
+import logging
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 from fastapi import FastAPI, HTTPException, Query, Request, UploadFile
-import logging
 from fastapi.responses import FileResponse, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.gzip import GZipMiddleware
@@ -292,6 +292,8 @@ def analyze_ai(document: AITextDocument, request: Request) -> dict:
         return record
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
+    except Exception as error:
+        raise HTTPException(status_code=400, detail="Não foi possível processar o documento.") from error
 
 
 @app.post("/compare")
