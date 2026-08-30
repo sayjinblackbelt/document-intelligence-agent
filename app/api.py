@@ -19,6 +19,7 @@ from .users import create_user
 from .report import analysis_json, analysis_markdown, analysis_pdf
 from .dashboard import dashboard_metrics
 from .batch import analyze_paths
+from .comparison import compare_analyses
 
 ALLOWED_EXTENSIONS = {".txt", ".pdf", ".docx"}
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
@@ -113,6 +114,11 @@ class LoginRequest(BaseModel):
 
 class UserCreateRequest(LoginRequest):
     role: str = "user"
+
+
+class ComparisonRequest(BaseModel):
+    left_id: int
+    right_id: int
 
 
 class TextDocument(BaseModel):
@@ -278,6 +284,16 @@ def analyze_ai(document: AITextDocument, request: Request) -> dict:
         return record
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
+
+
+@app.post("/compare")
+def compare_documents(payload: ComparisonRequest, request: Request) -> dict:
+    user = require_user(request)
+    left = get_analysis(payload.left_id, owner_id=user.user_id)
+    right = get_analysis(payload.right_id, owner_id=user.user_id)
+    if not left or not right:
+        raise HTTPException(status_code=404, detail="Uma ou mais análises não foram encontradas.")
+    return compare_analyses(left, right)
 
 
 @app.get("/dashboard")
