@@ -1,6 +1,6 @@
 import pytest
 
-from app.ai_providers import LocalAIProvider, OpenAIProvider, get_ai_provider
+from app.ai_providers import LocalAIProvider, OllamaProvider, OpenAIProvider, get_ai_provider
 
 
 def test_local_provider_returns_structured_analysis():
@@ -61,3 +61,39 @@ def test_openai_provider_sends_request_and_normalizes_response(monkeypatch):
     assert result["model"] == "test-model"
     assert result["resumo_executivo"] == "Resumo gerado pelo modelo."
     assert result["revisao_humana_recomendada"] is True
+
+
+def test_ollama_provider_sends_request_and_normalizes_response(monkeypatch):
+    class FakeResponse:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"message": {"content": "Resumo gerado localmente."}}
+
+    def fake_post(url, json, timeout):
+        assert url == "http://ollama.local/api/chat"
+        assert json["model"] == "llama-test"
+        assert json["stream"] is False
+        assert timeout == 60.0
+        return FakeResponse()
+
+    monkeypatch.setattr("app.ai_providers.httpx.post", fake_post)
+
+    provider = OllamaProvider(
+        base_url="http://ollama.local",
+        model="llama-test",
+    )
+    result = provider.analyze("Documento de teste.")
+
+    assert result["provider"] == "ollama"
+    assert result["modo"] == "llm-local"
+    assert result["model"] == "llama-test"
+    assert result["resumo_executivo"] == "Resumo gerado localmente."
+    assert result["revisao_humana_recomendada"] is True
+
+
+def test_provider_factory_returns_ollama_provider():
+    provider = get_ai_provider("ollama")
+
+    assert isinstance(provider, OllamaProvider)
