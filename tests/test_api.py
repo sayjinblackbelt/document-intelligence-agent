@@ -209,3 +209,17 @@ def test_history_export_supports_json_markdown_and_pdf():
 def test_history_export_rejects_unknown_format():
     response = client.get("/history/1/export?format=xml")
     assert response.status_code == 400
+
+
+def test_analyze_ai_accepts_language_selection():
+    response = client.post(
+        "/analyze/ai",
+        json={
+            "filename": "english.txt",
+            "content": "REQUISITOS: registrar.",
+            "provider": "local",
+            "language": "en",
+        },
+    )
+    assert response.status_code == 200
+    assert "analysis identified" in response.json()["analise_assistida"]["resumo_executivo"].lower()
