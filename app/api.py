@@ -18,6 +18,7 @@ from .auth import auth_status, login, require_user
 from .users import create_user
 from .report import analysis_json, analysis_markdown, analysis_pdf
 from .dashboard import dashboard_metrics
+from .batch import analyze_paths
 
 ALLOWED_EXTENSIONS = {".txt", ".pdf", ".docx"}
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
@@ -227,6 +228,35 @@ async def analyze_ai_file(
         raise HTTPException(status_code=400, detail="Não foi possível processar o arquivo.") from error
     finally:
         temporary_path.unlink(missing_ok=True)
+
+
+@app.post("/analyze/ai/batch")
+async def analyze_ai_batch(
+    request: Request,
+    files: list[UploadFile],
+    provider: str = "local",
+    language: str = "pt",
+) -> dict:
+    user = require_user(request)
+    if not files or len(files) > 20:
+        raise HTTPException(status_code=400, detail="Envie entre 1 e 20 arquivos.")
+    provider = validate_provider(provider)
+    language = validate_language(language)
+    paths = []
+    try:
+        for file in files:
+            suffix, content = await read_upload(file)
+            temporary = NamedTemporaryFile(suffix=suffix, delete=False)
+            temporary.write(content)
+            temporary.close()
+            paths.append(Path(temporary.name))
+        result = analyze_paths(paths, provider, language, user.user_id)
+        for item, file in zip(result["results"], files):
+            item["uploaded_filename"] = file.filename
+        return result
+    finally:
+        for path in paths:
+            path.unlink(missing_ok=True)
 
 
 @app.post("/analyze/ai")
