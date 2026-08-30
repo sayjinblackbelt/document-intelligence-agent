@@ -14,6 +14,7 @@ from .analyzer import analyze_document, analyze_text_content
 from .extractors import extract_text
 from .ai_analysis import analyze_with_ai
 from .history import get_analysis, list_analyses, save_analysis
+from .auth import api_key_fingerprint, require_api_key
 from .report import analysis_json, analysis_markdown, analysis_pdf
 
 ALLOWED_EXTENSIONS = {".txt", ".pdf", ".docx"}
@@ -112,6 +113,11 @@ def health() -> dict:
     return {"status": "ok", "service": "document-intelligence-agent"}
 
 
+@app.get("/auth/status")
+def auth_status() -> dict:
+    return {"authentication_enabled": bool(api_key_fingerprint())}
+
+
 @app.post("/analyze/text")
 def analyze_text(document: TextDocument) -> dict:
     suffix = Path(document.filename).suffix or ".txt"
@@ -153,11 +159,13 @@ async def analyze_file(file: UploadFile) -> dict:
 
 @app.post("/analyze/ai/file")
 async def analyze_ai_file(
+    request: Request,
     file: UploadFile,
     provider: str = "local",
     language: str = "pt",
 ) -> dict:
     """Extrai texto do arquivo, executa análise base e IA e persiste o resultado."""
+    require_api_key(request)
     suffix, content = await read_upload(file)
 
     with NamedTemporaryFile(suffix=suffix, delete=False) as temporary:
@@ -189,8 +197,9 @@ async def analyze_ai_file(
 
 
 @app.post("/analyze/ai")
-def analyze_ai(document: AITextDocument) -> dict:
+def analyze_ai(document: AITextDocument, request: Request) -> dict:
     """Executa análise base e camada opcional de IA assistida."""
+    require_api_key(request)
     try:
         provider = validate_provider(document.provider)
         language = validate_language(document.language)
@@ -209,23 +218,27 @@ def analyze_ai(document: AITextDocument) -> dict:
 
 @app.get("/history")
 def analysis_history(
+    request: Request,
     limit: int = Query(default=20, ge=1, le=100),
     provider: str | None = None,
     priority: str | None = None,
     filename: str | None = None,
 ) -> list[dict]:
     """Lista análises recentes com filtros opcionais."""
+    require_api_key(request)
     return list_analyses(
         limit=limit,
         provider=provider,
         priority=priority,
         filename=filename,
+        owner_id=api_key_fingerprint(),
     )
 
 
 @app.get("/history/{analysis_id}")
-def analysis_history_detail(analysis_id: int) -> dict:
+def analysis_history_detail(analysis_id: int, request: Request) -> dict:
     """Retorna uma análise persistida pelo identificador."""
+    require_api_key(request)
     record = get_analysis(analysis_id)
     if not record:
         raise HTTPException(status_code=404, detail="Análise não encontrada.")
@@ -233,8 +246,9 @@ def analysis_history_detail(analysis_id: int) -> dict:
 
 
 @app.get("/history/{analysis_id}/export")
-def export_analysis(analysis_id: int, format: str = "json", language: str = "pt"):
+def export_analysis(analysis_id: int, request: Request, format: str = "json", language: str = "pt"):
     """Exporta uma análise persistida em JSON, Markdown ou PDF."""
+    require_api_key(request)
     record = get_analysis(analysis_id)
     if not record:
         raise HTTPException(status_code=404, detail="Análise não encontrada.")
