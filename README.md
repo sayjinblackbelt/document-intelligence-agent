@@ -20,7 +20,11 @@
 - 🔄 CI com GitHub Actions;
 - 🐳 Docker e healthcheck;
 - 🔐 API Key opcional e JWT para usuários persistentes;
-- 👥 isolamento do histórico por usuário.
+- 👥 isolamento do histórico por usuário;
+- 📊 dashboard de métricas;
+- 📦 processamento em lote de até 20 arquivos;
+- 🔀 comparação estruturada entre documentos;
+- 🧾 eventos de auditoria estruturados.
 
 ## Início rápido
 
@@ -81,6 +85,9 @@ Principais endpoints:
 - `POST /analyze/file`
 - `POST /analyze/ai`
 - `POST /analyze/ai/file`
+- `GET /dashboard`
+- `POST /analyze/ai/batch`
+- `POST /compare`
 - `GET /history`
 - `GET /history/{id}`
 - `GET /history/{id}/export?format=json|md|pdf`
@@ -107,6 +114,20 @@ Para ambiente local, o projeto pode operar sem autenticação. Em deploy protegi
 ## OCR
 
 PDFs sem texto extraível usam OCR como fallback. No Docker, Tesseract e Poppler são instalados automaticamente.
+
+## Funcionalidades avançadas
+
+### Dashboard
+
+`GET /dashboard` retorna total de análises, score médio de completude, distribuição por provider, prioridade e tipo documental para o usuário autenticado.
+
+### Processamento em lote
+
+`POST /analyze/ai/batch` recebe de 1 a 20 documentos e retorna sucessos e falhas individualmente.
+
+### Comparação
+
+`POST /compare` compara duas análises pertencentes ao mesmo usuário, incluindo score, tipo, prioridade e requisitos comuns/exclusivos.
 
 ## Segurança
 
