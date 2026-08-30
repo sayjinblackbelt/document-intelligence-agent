@@ -139,3 +139,10 @@ def test_parse_structured_analysis_rejects_invalid_priority():
 
     with pytest.raises(ValueError, match="prioridade_sugerida"):
         parse_structured_analysis(invalid)
+
+
+def test_local_provider_supports_interface_languages():
+    text = "REQUISITOS: registrar. RISCO: atraso."
+
+    assert "analysis identified" in LocalAIProvider().analyze(text, language="en")["resumo_executivo"].lower()
+    assert "análisis identificó" in LocalAIProvider().analyze(text, language="es")["resumo_executivo"].lower()
