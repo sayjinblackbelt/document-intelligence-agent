@@ -101,8 +101,7 @@ def list_analyses(
     query = "SELECT * FROM analyses"
     if clauses:
         query += " WHERE " + " AND ".join(clauses)
-    query += " ORDER BY id DESC LIMIT ?"
-    params.append(safe_limit)
+    query += " ORDER BY id DESC"
 
     with _connect(database_path) as connection:
         rows = connection.execute(query, params).fetchall()
@@ -117,9 +116,7 @@ def list_analyses(
             == normalized_priority
         ]
 
-    return records
-
-    return [_deserialize(row) for row in rows]
+    return records[:safe_limit]
 
 
 def get_analysis(
