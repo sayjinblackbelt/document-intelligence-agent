@@ -22,3 +22,7 @@ Consulte `.env.example`:
 ## Produção
 
 Antes de receber documentos reais, implemente autenticação, autorização, rate limiting, HTTPS, retenção, backups, auditoria e controles adequados para dados sensíveis.
+
+## Autenticação
+
+Defina `DOCUMENT_AGENT_API_KEY` no ambiente de produção. Quando configurada, os endpoints de análise assistida e histórico exigem o header `X-API-Key`. O projeto mantém modo aberto apenas para demonstração local.
