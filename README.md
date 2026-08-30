@@ -28,7 +28,7 @@ Essa abordagem prioriza rastreabilidade e previsibilidade, permitindo evoluir o 
 - 🔎 identificação de requisitos, pendências e riscos;
 - 🏷️ classificação inicial de documentos;
 - 📊 score de completude;
-- 🤖 camada de IA assistida desacoplada;
+- 🤖 camada de IA assistida com adaptadores desacoplados;
 - 🌐 API REST com FastAPI;
 - 🖥️ interface web;
 - 🧪 testes automatizados para motor e API;
@@ -237,7 +237,7 @@ document-intelligence-agent/
 - [x] suporte a DOCX;
 - [x] testes automatizados;
 - [x] interface web;
-- [x] camada local de IA assistida;
+- [x] camada local de IA assistida;\n- [x] arquitetura de adaptadores de IA;\n- [x] integração opcional com OpenAI;
 - [x] Docker;
 - [x] CI com GitHub Actions.
 
@@ -245,7 +245,7 @@ document-intelligence-agent/
 
 - [ ] persistência de análises;
 - [ ] autenticação e controle de acesso;
-- [ ] adaptadores para provedores de LLM;
+- [x] adaptador OpenAI;\n- [ ] adaptadores para outros provedores de LLM;
 - [ ] OCR para PDFs digitalizados;
 - [ ] comparação entre versões de documentos;
 - [ ] histórico e dashboard de análises.
