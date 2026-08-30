@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 
 import httpx
 
+from .ai_schema import STRUCTURED_ANALYSIS_INSTRUCTIONS, parse_structured_analysis
 from .rules import KEYWORDS, find_keywords
 
 
@@ -56,9 +57,9 @@ class LocalAIProvider(AIProvider):
             "modo": "local-demonstrativo",
             "provider": self.name,
             "resumo_executivo": summary,
-            "requisitos_contextuais": requirements,
-            "pendencias_contextuais": pending,
-            "riscos_contextuais": risks,
+            "requisitos": requirements,
+            "pendencias": pending,
+            "riscos": risks,
             "prioridade_sugerida": priority,
             "revisao_humana_recomendada": True,
         }
@@ -90,14 +91,13 @@ class OpenAIProvider(AIProvider):
         payload = {
             "model": self.model,
             "temperature": 0.2,
+            "response_format": {"type": "json_object"},
             "messages": [
                 {
                     "role": "system",
                     "content": (
-                        "Você é um assistente de análise documental. "
-                        "Produza uma resposta objetiva em português, destacando "
-                        "requisitos, pendências, riscos e uma prioridade sugerida. "
-                        "Não invente informações ausentes no documento."
+                        "Você é um assistente de análise documental em português. "
+                        + STRUCTURED_ANALYSIS_INSTRUCTIONS
                     ),
                 },
                 {"role": "user", "content": text},
@@ -122,7 +122,9 @@ class OpenAIProvider(AIProvider):
 
         data = response.json()
         try:
-            summary = data["choices"][0]["message"]["content"].strip()
+            analysis = parse_structured_analysis(
+                data["choices"][0]["message"]["content"]
+            )
         except (KeyError, IndexError, AttributeError) as error:
             raise ValueError(
                 "Resposta inesperada recebida do provider OpenAI."
@@ -132,7 +134,7 @@ class OpenAIProvider(AIProvider):
             "modo": "llm",
             "provider": self.name,
             "model": self.model,
-            "resumo_executivo": summary,
+            **analysis,
             "revisao_humana_recomendada": True,
         }
 
@@ -158,14 +160,13 @@ class OllamaProvider(AIProvider):
         payload = {
             "model": self.model,
             "stream": False,
+            "format": "json",
             "messages": [
                 {
                     "role": "system",
                     "content": (
-                        "Você é um assistente de análise documental. "
-                        "Produza uma resposta objetiva em português, destacando "
-                        "requisitos, pendências, riscos e uma prioridade sugerida. "
-                        "Não invente informações ausentes no documento."
+                        "Você é um assistente de análise documental em português. "
+                        + STRUCTURED_ANALYSIS_INSTRUCTIONS
                     ),
                 },
                 {"role": "user", "content": text},
@@ -187,7 +188,7 @@ class OllamaProvider(AIProvider):
 
         data = response.json()
         try:
-            summary = data["message"]["content"].strip()
+            analysis = parse_structured_analysis(data["message"]["content"])
         except (KeyError, AttributeError) as error:
             raise ValueError(
                 "Resposta inesperada recebida do provider Ollama."
@@ -197,7 +198,7 @@ class OllamaProvider(AIProvider):
             "modo": "llm-local",
             "provider": self.name,
             "model": self.model,
-            "resumo_executivo": summary,
+            **analysis,
             "revisao_humana_recomendada": True,
         }
 
