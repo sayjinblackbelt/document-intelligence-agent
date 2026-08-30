@@ -46,6 +46,9 @@ Main endpoints:
 - `POST /analyze/file`
 - `POST /analyze/ai`
 - `POST /analyze/ai/file`
+- `GET /dashboard`
+- `POST /analyze/ai/batch`
+- `POST /compare`
 - `GET /history`
 - `GET /history/{id}`
 - `GET /history/{id}/export?format=json|md|pdf`
