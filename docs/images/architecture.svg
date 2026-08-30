@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" viewBox="0 0 1200 820" role="img" aria-labelledby="title desc">
+  <title id="title">Document Intelligence Agent Architecture</title>
+  <desc id="desc">Fluxo da interface e API para extração, análise determinística e camada opcional de IA local.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#4a9ad1"/></marker>
+    <style>
+      .bg{fill:#11181b}.title{fill:#fff;font:700 32px Arial,sans-serif}.sub{fill:#c8d5df;font:18px Arial,sans-serif}.box{fill:#18242a;stroke:#4a9ad1;stroke-width:2;rx:18}.accent{fill:#035aa6;stroke:#4a9ad1;stroke-width:2;rx:18}.ai{fill:#2a1d20;stroke:#ff7c24;stroke-width:2;rx:18}.txt{fill:#fff;font:700 19px Arial,sans-serif}.small{fill:#c8d5df;font:15px Arial,sans-serif}.arrow{stroke:#4a9ad1;stroke-width:3;fill:none;marker-end:url(#arrow)}.dash{stroke:#ff9800;stroke-width:3;stroke-dasharray:9 8;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="820" rx="24"/>
+  <text x="600" y="60" text-anchor="middle" class="title">Document Intelligence Agent — Arquitetura Atual</text>
+  <text x="600" y="92" text-anchor="middle" class="sub">Implementação real do MVP • Python 3.12 • FastAPI • regras determinísticas • IA local demonstrativa</text>
+
+  <rect x="55" y="160" width="210" height="115" class="accent"/><text x="160" y="205" text-anchor="middle" class="txt">ENTRADAS</text><text x="160" y="235" text-anchor="middle" class="small">Interface Web</text><text x="160" y="258" text-anchor="middle" class="small">API REST • TXT • PDF • DOCX</text>
+
+  <rect x="330" y="160" width="220" height="115" class="box"/><text x="440" y="205" text-anchor="middle" class="txt">FASTAPI</text><text x="440" y="235" text-anchor="middle" class="small">/analyze/text</text><text x="440" y="258" text-anchor="middle" class="small">/analyze/file • /analyze/ai</text>
+
+  <rect x="615" y="160" width="230" height="115" class="box"/><text x="730" y="205" text-anchor="middle" class="txt">EXTRACTORS</text><text x="730" y="235" text-anchor="middle" class="small">TXT • pypdf • python-docx</text><text x="730" y="258" text-anchor="middle" class="small">extract_text()</text>
+
+  <rect x="910" y="160" width="235" height="115" class="accent"/><text x="1027" y="205" text-anchor="middle" class="txt">ANALYZER</text><text x="1027" y="235" text-anchor="middle" class="small">analyze_document()</text><text x="1027" y="258" text-anchor="middle" class="small">analyze_text_content()</text>
+
+  <path d="M265 217 L330 217" class="arrow"/><path d="M550 217 L615 217" class="arrow"/><path d="M845 217 L910 217" class="arrow"/>
+
+  <rect x="310" y="385" width="270" height="155" class="box"/><text x="445" y="430" text-anchor="middle" class="txt">RULES</text><text x="445" y="463" text-anchor="middle" class="small">classificação de documento</text><text x="445" y="490" text-anchor="middle" class="small">requisitos • pendências • riscos</text><text x="445" y="517" text-anchor="middle" class="small">KEYWORDS + regras explícitas</text>
+
+  <rect x="655" y="385" width="270" height="155" class="accent"/><text x="790" y="430" text-anchor="middle" class="txt">RESULTADO BASE</text><text x="790" y="463" text-anchor="middle" class="small">tipo_documento</text><text x="790" y="490" text-anchor="middle" class="small">palavras_chave • score</text><text x="790" y="517" text-anchor="middle" class="small">caracteres • linhas</text>
+
+  <path d="M1027 275 L1027 330 L445 330 L445 385" class="arrow"/><path d="M580 462 L655 462" class="arrow"/>
+
+  <rect x="70" y="625" width="330" height="135" class="ai"/><text x="235" y="670" text-anchor="middle" class="txt">IA ASSISTIDA OPCIONAL</text><text x="235" y="700" text-anchor="middle" class="small">provider: local</text><text x="235" y="727" text-anchor="middle" class="small">resumo • prioridade • revisão humana</text>
+
+  <rect x="470" y="625" width="280" height="135" class="accent"/><text x="610" y="670" text-anchor="middle" class="txt">RESPOSTA JSON</text><text x="610" y="700" text-anchor="middle" class="small">resultado estruturado</text><text x="610" y="727" text-anchor="middle" class="small">API ou interface web</text>
+
+  <rect x="820" y="625" width="310" height="135" class="box"/><text x="975" y="670" text-anchor="middle" class="txt">REVISÃO HUMANA</text><text x="975" y="700" text-anchor="middle" class="small">interpretação e decisão técnica</text><text x="975" y="727" text-anchor="middle" class="small">não substituída pela camada de IA</text>
+
+  <path d="M790 540 L790 590 L610 590 L610 625" class="arrow"/>
+  <path d="M790 540 L790 575 L235 575 L235 625" class="dash"/>
+  <path d="M400 692 L470 692" class="dash"/><path d="M750 692 L820 692" class="arrow"/>
+  <text x="235" y="590" text-anchor="middle" fill="#ffce00" font-family="Arial,sans-serif" font-size="14">rota /analyze/ai</text>
+  <text x="600" y="800" text-anchor="middle" fill="#8ea1ad" font-family="Arial,sans-serif" font-size="13">Linhas tracejadas: camada opcional. Não há integração externa com LLM no MVP atual.</text>
+</svg>
