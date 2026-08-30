@@ -71,6 +71,22 @@
         </div>
         <button id="refresh-history" type="button">Atualizar</button>
       </div>
+      <div class="history-filters">
+        <input id="history-search" type="search" placeholder="Buscar por nome do documento">
+        <select id="history-provider-filter">
+          <option value="">Todos os providers</option>
+          <option value="local">Local</option>
+          <option value="openai">OpenAI</option>
+          <option value="ollama">Ollama</option>
+        </select>
+        <select id="history-priority-filter">
+          <option value="">Todas as prioridades</option>
+          <option value="alta">Alta</option>
+          <option value="média">Média</option>
+          <option value="baixa">Baixa</option>
+        </select>
+        <button id="clear-history-filters" type="button">Limpar</button>
+      </div>
       <p id="history-status">Carregando histórico...</p>
       <div id="history-list" class="history-list"></div>
       <section id="history-detail" class="history-detail" hidden>
