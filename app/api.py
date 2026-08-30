@@ -105,6 +105,21 @@ def analyze_ai(document: AITextDocument) -> dict:
         raise HTTPException(status_code=400, detail=str(error)) from error
 
 
+@app.get("/history")
+def analysis_history(limit: int = 20) -> list[dict]:
+    """Lista as análises mais recentes."""
+    return list_analyses(limit=limit)
+
+
+@app.get("/history/{analysis_id}")
+def analysis_history_detail(analysis_id: int) -> dict:
+    """Retorna uma análise persistida pelo identificador."""
+    record = get_analysis(analysis_id)
+    if not record:
+        raise HTTPException(status_code=404, detail="Análise não encontrada.")
+    return record
+
+
 STATIC_DIR = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
