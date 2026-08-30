@@ -1,5 +1,7 @@
 # Document Intelligence Agent
 
+🇧🇷 Português | [🇺🇸 English](README.en.md) | [🇪🇸 Español](README.es.md)
+
 > MVP demonstrativo para análise estruturada de documentos com Python, regras determinísticas e saída em JSON.
 
 ## Objetivo
