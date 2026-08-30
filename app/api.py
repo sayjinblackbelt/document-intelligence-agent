@@ -10,11 +10,12 @@ from pydantic import BaseModel
 
 from .analyzer import analyze_document, analyze_text_content
 from .ai_analysis import analyze_with_ai
+from .history import get_analysis, list_analyses, save_analysis
 
 app = FastAPI(
     title="Document Intelligence Agent",
     description="API demonstrativa para classificação e análise inicial de documentos.",
-    version="0.4.0",
+    version="0.5.0",
 )
 
 
@@ -93,10 +94,13 @@ def analyze_ai(document: AITextDocument) -> dict:
     try:
         base = analyze_text_content(document.content, document.filename)
         assisted = analyze_with_ai(document.content, document.provider)
-        return {
-            "analise_base": base,
-            "analise_assistida": assisted,
-        }
+        record = save_analysis(
+            filename=document.filename,
+            provider=document.provider,
+            base_analysis=base,
+            assisted_analysis=assisted,
+        )
+        return record
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
 
