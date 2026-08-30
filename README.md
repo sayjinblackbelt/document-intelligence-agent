@@ -2,191 +2,106 @@
 
 🇧🇷 Português | [🇺🇸 English](README.en.md) | [🇪🇸 Español](README.es.md)
 
-> MVP demonstrativo para análise estruturada de documentos com Python, regras determinísticas e saída em JSON.
+[![CI](https://github.com/sayjinblackbelt/document-intelligence-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/sayjinblackbelt/document-intelligence-agent/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.12-blue)](https://www.python.org/)
+[![Docker](https://img.shields.io/badge/Docker-ready-blue)](https://www.docker.com/)
 
-## Objetivo
+> API e interface web para análise estruturada de documentos com Python, regras determinísticas e uma camada opcional de IA assistida.
 
-Demonstrar como processos de análise documental podem ser parcialmente automatizados, reduzindo tarefas repetitivas e produzindo informações estruturadas para apoio à decisão.
+## Visão geral
 
-## MVP atual
+O **Document Intelligence Agent** demonstra como automatizar etapas iniciais da análise documental sem depender exclusivamente de modelos de IA.
 
-O agente:
+A arquitetura separa:
 
-- lê documentos de texto;
-- identifica metadados básicos;
-- procura requisitos, pendências e riscos por regras configuráveis;
-- classifica o tipo de documento;
-- calcula um score de completude;
-- gera um relatório JSON.
+- **extração de conteúdo**;
+- **análise determinística e reproduzível**;
+- **classificação e identificação de requisitos, pendências e riscos**;
+- **camada opcional de análise assistida por IA**;
+- **revisão humana para decisões técnicas**.
+
+Essa abordagem prioriza rastreabilidade e previsibilidade, permitindo evoluir o sistema com LLMs sem substituir a camada de regras.
+
+## Principais recursos
+
+- 📄 Suporte a **TXT, PDF e DOCX**;
+- 🔎 identificação de requisitos, pendências e riscos;
+- 🏷️ classificação inicial de documentos;
+- 📊 score de completude;
+- 🤖 camada de IA assistida desacoplada;
+- 🌐 API REST com FastAPI;
+- 🖥️ interface web;
+- 🧪 testes automatizados para motor e API;
+- 🔄 CI com GitHub Actions;
+- 🐳 execução com Docker;
+- 🩺 healthcheck para monitoramento básico.
 
 ## Arquitetura
 
 ```text
-Documento
-   ↓
-Leitura
-   ↓
-Extração de metadados
-   ↓
-Regras de análise
-   ├── requisitos
-   ├── pendências
-   └── riscos
-   ↓
-Score
-   ↓
-Relatório JSON
+DOCUMENTO
+    │
+    ▼
+EXTRAÇÃO DE TEXTO
+TXT / PDF / DOCX
+    │
+    ▼
+MOTOR DETERMINÍSTICO
+    ├── classificação
+    ├── requisitos
+    ├── pendências
+    └── riscos
+    │
+    ▼
+SCORE E RESULTADO BASE
+    │
+    ▼
+IA ASSISTIDA OPCIONAL
+    │
+    ▼
+RESULTADO ESTRUTURADO
+    │
+    ▼
+REVISÃO HUMANA
 ```
 
-## Estrutura
+## Stack
 
-```text
-document-intelligence-agent/
-├── app/
-│   ├── analyzer.py
-│   ├── rules.py
-│   └── report.py
-├── sample_data/
-│   ├── document_01.txt
-│   ├── document_02.txt
-│   └── document_03.txt
-├── output/
-│   └── .gitkeep
-├── tests/
-│   └── test_analyzer.py
-├── docs/
-│   └── ARCHITECTURE.md
-├── main.py
-├── requirements.txt
-└── README.md
-```
+| Área | Tecnologias |
+|---|---|
+| Backend | Python 3.12, FastAPI |
+| Extração | pypdf, python-docx |
+| Testes | pytest |
+| API | FastAPI, Pydantic |
+| Servidor | Uvicorn |
+| Container | Docker |
+| Automação | GitHub Actions |
 
-## Execução
+## Início rápido
+
+### Execução local
 
 ```bash
-python main.py
+git clone https://github.com/sayjinblackbelt/document-intelligence-agent.git
+cd document-intelligence-agent
+
+python -m venv .venv
+source .venv/bin/activate
 ```
 
-O relatório será salvo em `output/analysis_report.json`.
+No Windows:
 
-## Princípio de projeto
+```powershell
+.venv\Scripts\Activate.ps1
+```
 
-A primeira versão é determinística. Isso permite resultados reproduzíveis, testes objetivos e rastreabilidade. A integração com IA poderá ser adicionada posteriormente sem substituir a camada de validação.
-
-## Roadmap
-
-1. MVP local;
-2. testes automatizados;
-3. FastAPI;
-4. upload de documentos;
-5. persistência;
-6. integração com LLM;
-7. interface web;
-8. comparação entre versões.
-
-## Confidencialidade
-
-Todos os documentos de demonstração são fictícios. Nenhum conteúdo corporativo ou proprietário é utilizado.
-
-## Tecnologias
-
-Python · JSON · pytest (testes) · FastAPI (roadmap)
-
-
-## API REST
-
-A versão atual também disponibiliza uma API FastAPI.
+Instale as dependências:
 
 ```bash
 pip install -r requirements.txt
-uvicorn app.api:app --reload
 ```
 
-Endpoints iniciais:
-
-- `GET /health`
-- `POST /analyze/text`
-- `POST /analyze/file`
-
-A documentação interativa é fornecida automaticamente pelo FastAPI em `/docs`.
-
-Veja também:
-
-- [Documentação da API](docs/API.md)
-- [Roadmap](docs/ROADMAP.md)
-
-## Evolução do projeto
-
-```text
-MVP Python ✓
-      ↓
-API REST ✓
-      ↓
-PDF / DOCX
-      ↓
-IA assistida
-      ↓
-Interface Web
-```
-
-
-## Suporte a documentos
-
-O agente agora suporta:
-
-- **TXT**
-- **PDF com texto extraível**
-- **DOCX**
-
-A extração ocorre antes da análise, permitindo que o mesmo motor de regras trabalhe sobre o texto normalizado.
-
-```text
-TXT / PDF / DOCX
-        ↓
-Extração de texto
-        ↓
-Normalização
-        ↓
-Motor de análise
-        ↓
-JSON
-```
-
-> PDFs digitalizados como imagem ainda exigiriam uma futura camada de OCR.
-
-
-## IA assistida
-
-A Fase 4 introduz uma camada de análise assistida desacoplada do motor principal.
-
-```text
-Documento
-   ↓
-Extração
-   ↓
-Regras determinísticas
-   ↓
-IA assistida opcional
-   ↓
-Resultado estruturado
-   ↓
-Revisão humana
-```
-
-O modo atual `local` funciona sem chave de API e demonstra a arquitetura de integração. Um endpoint externo pode ser conectado futuramente por meio de adaptadores, sem alterar o motor principal.
-
-Endpoint:
-
-- `POST /analyze/ai`
-
-A IA do projeto é assistiva: resultados não substituem revisão técnica ou decisão humana.
-
-
-## Interface Web
-
-A aplicação agora possui uma interface web demonstrativa servida pelo próprio FastAPI.
-
-Após iniciar:
+Execute a aplicação:
 
 ```bash
 uvicorn app.api:app --reload
@@ -194,53 +109,188 @@ uvicorn app.api:app --reload
 
 Abra:
 
-```text
-http://127.0.0.1:8000/
+- Interface web: `http://127.0.0.1:8000/`
+- Healthcheck: `http://127.0.0.1:8000/health`
+- Documentação interativa: `http://127.0.0.1:8000/docs`
+
+## API
+
+### Health
+
+```http
+GET /health
 ```
 
-A interface permite:
+### Analisar texto
 
-- upload de TXT, PDF ou DOCX;
-- execução da análise;
-- visualização de classificação;
-- score de completude;
-- requisitos;
-- pendências;
-- riscos;
-- JSON completo.
-
-## Fluxo completo
-
-```text
-USUÁRIO
-  ↓
-INTERFACE WEB
-  ↓
-FASTAPI
-  ↓
-EXTRAÇÃO DOCUMENTAL
-  ↓
-REGRAS
-  ↓
-IA ASSISTIDA
-  ↓
-RESULTADO
-  ↓
-REVISÃO HUMANA
+```http
+POST /analyze/text
 ```
 
+Exemplo:
 
-## Deploy
+```json
+{
+  "filename": "projeto.txt",
+  "content": "REQUISITOS: registrar documentos. PENDÊNCIA: revisar. RISCO: atraso."
+}
+```
 
-O projeto está preparado para execução em container com Docker.
+### Analisar arquivo
+
+```http
+POST /analyze/file
+```
+
+Formatos aceitos:
+
+- TXT
+- PDF com texto extraível
+- DOCX
+
+### Análise assistida
+
+```http
+POST /analyze/ai
+```
+
+O modo `local` funciona sem chave de API e demonstra a arquitetura assistiva.
+
+> Os resultados da camada de IA não substituem revisão técnica ou decisão humana.
+
+Para detalhes adicionais, consulte a [Documentação da API](docs/API.md).
+
+## Testes
+
+Execute todos os testes:
+
+```bash
+pytest -q
+```
+
+A suíte atual cobre:
+
+- motor de análise;
+- análise de diretórios;
+- health endpoint;
+- análise de texto;
+- upload de arquivo;
+- validação de formatos;
+- análise assistida;
+- tratamento de provider não configurado.
+
+## CI
+
+O GitHub Actions executa automaticamente em:
+
+- push para `main`;
+- pull requests para `main`.
+
+O pipeline:
+
+```text
+PUSH / PULL REQUEST
+        ↓
+INSTALAR DEPENDÊNCIAS
+        ↓
+PYTEST
+        ↓
+DOCKER BUILD
+```
+
+## Docker
+
+Build:
 
 ```bash
 docker build -t document-intelligence-agent .
+```
+
+Execução:
+
+```bash
 docker run -p 8000:8000 document-intelligence-agent
 ```
 
-Também foi incluída uma configuração `render.yaml` para facilitar deploy demonstrativo em plataformas compatíveis.
+O container:
 
-Consulte [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+- executa com usuário não-root;
+- utiliza dependências versionadas;
+- possui healthcheck;
+- permite configuração da porta pela variável `PORT`.
 
-> **Importante:** uma versão pública do MVP deve utilizar apenas documentos fictícios ou não confidenciais até que sejam implementados controles adequados de segurança e retenção de dados.
+## Estrutura
+
+```text
+document-intelligence-agent/
+├── app/
+│   ├── analyzer.py
+│   ├── api.py
+│   ├── ai_analysis.py
+│   ├── extractors.py
+│   ├── rules.py
+│   └── static/
+├── tests/
+│   ├── test_analyzer.py
+│   └── test_api.py
+├── docs/
+│   ├── API.md
+│   ├── ARCHITECTURE.md
+│   ├── DEPLOYMENT.md
+│   └── ROADMAP.md
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+├── Dockerfile
+├── render.yaml
+├── requirements.txt
+└── README.md
+```
+
+## Roadmap
+
+### Concluído
+
+- [x] Motor determinístico de análise;
+- [x] API REST;
+- [x] suporte a TXT;
+- [x] suporte a PDF;
+- [x] suporte a DOCX;
+- [x] testes automatizados;
+- [x] interface web;
+- [x] camada local de IA assistida;
+- [x] Docker;
+- [x] CI com GitHub Actions.
+
+### Próximas evoluções
+
+- [ ] persistência de análises;
+- [ ] autenticação e controle de acesso;
+- [ ] adaptadores para provedores de LLM;
+- [ ] OCR para PDFs digitalizados;
+- [ ] comparação entre versões de documentos;
+- [ ] histórico e dashboard de análises.
+
+## Segurança e confidencialidade
+
+Este projeto é demonstrativo.
+
+Uma implantação pública deve utilizar apenas documentos fictícios ou não confidenciais até que sejam implementados controles adequados de:
+
+- autenticação;
+- autorização;
+- retenção;
+- armazenamento seguro;
+- auditoria;
+- tratamento de dados sensíveis.
+
+## Documentação
+
+- [API](docs/API.md)
+- [Arquitetura](docs/ARCHITECTURE.md)
+- [Deploy](docs/DEPLOYMENT.md)
+- [Roadmap](docs/ROADMAP.md)
+
+---
+
+**Document Intelligence Agent** é um projeto de portfólio focado em **Python, automação, APIs, análise documental, IA assistida e arquitetura de software**.
