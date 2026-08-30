@@ -69,7 +69,7 @@ async function openHistory(id){
     if(!response.ok)throw new Error(record.detail||'Falha ao abrir análise');
     currentHistoryId=record.id;
     const analysis=record.analise_assistida||{};
-    historyTitle.textContent='Análise #'+record.id+' • '+record.filename;
+    historyTitle.textContent='#'+record.id+' • '+record.filename;
     document.getElementById('history-summary').textContent=analysis.resumo_executivo||t('noSummary');
     document.getElementById('history-provider').textContent=analysis.provider||record.provider||'—';
     document.getElementById('history-priority').textContent=analysis.prioridade_sugerida||'—';
@@ -80,12 +80,12 @@ async function openHistory(id){
     historyJson.textContent=JSON.stringify(record,null,2);
     historyDetail.hidden=false;
     historyDetail.scrollIntoView({behavior:'smooth',block:'nearest'});
-  }catch(error){historyStatus.textContent='Erro: '+error.message}
+  }catch(error){historyStatus.textContent=t('error')+' '+error.message}
 }
 
 function formatDate(value){
   const date=new Date(value);
-  return Number.isNaN(date.getTime())?value:date.toLocaleString('pt-BR');
+  return Number.isNaN(date.getTime())?value:date.toLocaleString(language==='pt'?'pt-BR':language);
 }
 
 function escapeHtml(value){
@@ -154,7 +154,7 @@ aiForm.addEventListener('submit',async event=>{
 document.getElementById('history-export').addEventListener('click',event=>{
   const format=event.target.dataset.export;
   if(format&&currentHistoryId){
-    window.open('/history/'+currentHistoryId+'/export?format='+format,'_blank');
+    window.open('/history/'+currentHistoryId+'/export?format='+format+'&language='+encodeURIComponent(language),'_blank');
   }
 });
 
