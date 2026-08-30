@@ -257,20 +257,17 @@ async def analyze_ai_batch(
         raise HTTPException(status_code=400, detail="Envie entre 1 e 20 arquivos.")
     provider = validate_provider(provider)
     language = validate_language(language)
-    paths = []
+    files_to_process: list[tuple[Path, str]] = []
     try:
         for file in files:
             suffix, content = await read_upload(file)
             temporary = NamedTemporaryFile(suffix=suffix, delete=False)
             temporary.write(content)
             temporary.close()
-            paths.append(Path(temporary.name))
-        result = analyze_paths(paths, provider, language, user.user_id)
-        for item, file in zip(result["results"], files):
-            item["uploaded_filename"] = file.filename
-        return result
+            files_to_process.append((Path(temporary.name), file.filename))
+        return analyze_paths(files_to_process, provider, language, user.user_id)
     finally:
-        for path in paths:
+        for path, _filename in files_to_process:
             path.unlink(missing_ok=True)
 
 
