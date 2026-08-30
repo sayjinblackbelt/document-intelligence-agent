@@ -17,6 +17,7 @@ from .history import get_analysis, list_analyses, save_analysis
 from .auth import auth_status, login, require_user
 from .users import create_user
 from .report import analysis_json, analysis_markdown, analysis_pdf
+from .dashboard import dashboard_metrics
 
 ALLOWED_EXTENSIONS = {".txt", ".pdf", ".docx"}
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
@@ -247,6 +248,14 @@ def analyze_ai(document: AITextDocument, request: Request) -> dict:
         return record
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
+
+
+@app.get("/dashboard")
+def dashboard(request: Request) -> dict:
+    """Retorna métricas agregadas das análises do usuário autenticado."""
+    user = require_user(request)
+    records = list_analyses(limit=100, owner_id=user.user_id)
+    return dashboard_metrics(records)
 
 
 @app.get("/history")
