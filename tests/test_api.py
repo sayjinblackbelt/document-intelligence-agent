@@ -182,3 +182,30 @@ def test_analyze_ai_file_rejects_unsupported_extension():
 
     assert response.status_code == 400
     assert response.json()["detail"] == "Formatos suportados: TXT, PDF e DOCX."
+
+
+def test_history_export_supports_json_markdown_and_pdf():
+    created = client.post(
+        "/analyze/ai",
+        json={
+            "filename": "export.txt",
+            "content": "REQUISITOS: registrar. RISCO: atraso.",
+            "provider": "local",
+        },
+    ).json()
+
+    for export_format, media_type in [
+        ("json", "application/json"),
+        ("md", "text/markdown"),
+        ("pdf", "application/pdf"),
+    ]:
+        response = client.get(
+            f"/history/{created['id']}/export?format={export_format}"
+        )
+        assert response.status_code == 200
+        assert media_type in response.headers["content-type"]
+
+
+def test_history_export_rejects_unknown_format():
+    response = client.get("/history/1/export?format=xml")
+    assert response.status_code == 400
