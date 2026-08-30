@@ -129,7 +129,7 @@ aiForm.addEventListener('submit',async event=>{
     const provider=document.getElementById('ai-provider').value;
     const data=new FormData();
     data.append('file',file);
-    const response=await fetch('/analyze/ai/file?provider='+encodeURIComponent(provider),{
+    const response=await fetch('/analyze/ai/file?provider='+encodeURIComponent(provider)+'&language='+encodeURIComponent(language),{
       method:'POST',
       body:data
     });
