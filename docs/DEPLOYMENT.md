@@ -26,3 +26,11 @@ Antes de receber documentos reais, implemente autenticação, autorização, rat
 ## Autenticação
 
 Defina `DOCUMENT_AGENT_API_KEY` no ambiente de produção. Quando configurada, os endpoints de análise assistida e histórico exigem o header `X-API-Key`. O projeto mantém modo aberto apenas para demonstração local.
+
+## JWT e usuários
+
+Defina `JWT_SECRET` com um segredo longo e aleatório para habilitar autenticação Bearer. Crie o primeiro usuário administrativo em ambiente controlado; em produção, não exponha registro administrativo sem uma estratégia de bootstrap segura.
+
+## OCR
+
+PDFs sem camada de texto usam Tesseract como fallback. A imagem Docker inclui Tesseract em português e Poppler. Instalações locais precisam desses componentes disponíveis no sistema.
