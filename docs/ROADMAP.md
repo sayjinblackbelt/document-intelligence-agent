@@ -1,41 +1,31 @@
 # Roadmap
 
-## Concluído — MVP
+## Concluído
 
-- análise de TXT;
-- classificação;
-- identificação de palavras-chave;
-- score demonstrativo;
-- relatório JSON;
-- testes;
-- CI.
+- TXT, PDF com texto e DOCX;
+- análise determinística;
+- Local, OpenAI e Ollama;
+- JSON estruturado validado;
+- SQLite com busca e filtros;
+- exportação JSON, Markdown e PDF;
+- interface PT/EN/ES;
+- Docker, testes e CI;
+- limite de upload e headers básicos de segurança.
 
-## Concluído — API inicial
+## Próxima fase — Produção
 
-- FastAPI;
-- health check;
-- análise por JSON;
-- upload TXT;
-- documentação OpenAPI.
+1. autenticação e autorização;
+2. configuração por ambiente;
+3. logging estruturado e observabilidade;
+4. rate limiting;
+5. migrações e banco gerenciado;
+6. testes de integração e segurança;
+7. OCR para PDFs escaneados;
+8. política de retenção e exclusão de dados.
 
-## Próximas fases
+## Evolução de produto
 
-### Fase 3 — Extração de documentos
-
-- PDF;
-- DOCX;
-- normalização de texto.
-
-### Fase 4 — IA assistida
-
-- resumo executivo;
-- extração contextual de requisitos;
-- classificação assistida;
-- análise de riscos;
-- revisão humana.
-
-### Fase 5 — Interface ✓
-
-- upload;
-- histórico;
-- visualização dos resultados.
+- comparação entre documentos;
+- processamento em lote;
+- dashboard de tendências;
+- revisão humana com status e comentários.
