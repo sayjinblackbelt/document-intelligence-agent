@@ -30,7 +30,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Executar testes
-        run: pytest -q
+        run: python -m pytest -q
 
   docker:
     name: Build Docker
