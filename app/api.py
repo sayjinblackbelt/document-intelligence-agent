@@ -131,18 +131,7 @@ async def analyze_ai_file(
     language: str = "pt",
 ) -> dict:
     """Extrai texto do arquivo, executa análise base e IA e persiste o resultado."""
-    if not file.filename:
-        raise HTTPException(status_code=400, detail="Arquivo sem nome.")
-
-    allowed_extensions = (".txt", ".pdf", ".docx")
-    if not file.filename.lower().endswith(allowed_extensions):
-        raise HTTPException(
-            status_code=400,
-            detail="Formatos suportados: TXT, PDF e DOCX.",
-        )
-
-    suffix = Path(file.filename).suffix.lower()
-    content = await file.read()
+    suffix, content = await read_upload(file)
 
     with NamedTemporaryFile(suffix=suffix, delete=False) as temporary:
         temporary.write(content)
@@ -179,11 +168,13 @@ async def analyze_ai_file(
 def analyze_ai(document: AITextDocument) -> dict:
     """Executa análise base e camada opcional de IA assistida."""
     try:
+        provider = validate_provider(document.provider)
+        language = validate_language(document.language)
         base = analyze_text_content(document.content, document.filename)
-        assisted = analyze_with_ai(document.content, document.provider, document.language)
+        assisted = analyze_with_ai(document.content, provider, language)
         record = save_analysis(
             filename=document.filename,
-            provider=document.provider,
+            provider=provider,
             base_analysis=base,
             assisted_analysis=assisted,
         )
