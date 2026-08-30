@@ -2,36 +2,23 @@
 
 ## Docker
 
-Construção:
-
 ```bash
 docker build -t document-intelligence-agent .
+docker run -p 8000:8000 -e DATABASE_PATH=/app/data/analyses.db document-intelligence-agent
 ```
 
-Execução:
+Abra `http://localhost:8000`.
 
-```bash
-docker run -p 8000:8000 document-intelligence-agent
-```
+## Variáveis
 
-Abra:
+Consulte `.env.example`:
 
-```text
-http://localhost:8000
-```
+- `OPENAI_API_KEY`
+- `OPENAI_MODEL`
+- `OLLAMA_BASE_URL`
+- `OLLAMA_MODEL`
+- `DATABASE_PATH`
 
-## Plataforma de hospedagem
+## Produção
 
-O projeto inclui `render.yaml` como configuração demonstrativa para plataformas compatíveis com deploy baseado em repositório.
-
-Antes de publicar, revise:
-
-- limites do plano;
-- variáveis de ambiente;
-- política de privacidade;
-- limites de upload;
-- logs e observabilidade.
-
-## Segurança
-
-O MVP não deve receber documentos confidenciais em ambiente público sem controles adicionais de autenticação, armazenamento, retenção e proteção de dados.
+Antes de receber documentos reais, implemente autenticação, autorização, rate limiting, HTTPS, retenção, backups, auditoria e controles adequados para dados sensíveis.
