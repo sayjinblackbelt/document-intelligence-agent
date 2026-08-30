@@ -20,7 +20,33 @@
         <input id="file" type="file" accept=".txt,.pdf,.docx" required>
         <button>Analisar arquivo</button>
       </form>
+      <form id="ai-form" class="ai-form">
+        <label for="ai-provider">Análise assistida por IA</label>
+        <select id="ai-provider">
+          <option value="local">Local (determinístico)</option>
+          <option value="openai">OpenAI</option>
+          <option value="ollama">Ollama</option>
+        </select>
+        <button id="ai-submit" type="submit">Executar análise assistida</button>
+      </form>
+      <p id="ai-status"></p>
       <p id="status"></p>
+    </section>
+
+    <section id="ai-results" class="panel" hidden>
+      <p class="eyebrow">ANÁLISE ASSISTIDA</p>
+      <h2 id="ai-title">Resultado da IA</h2>
+      <p id="ai-summary"></p>
+      <div class="metrics">
+        <article><span>Provider</span><strong id="ai-provider-result">—</strong></article>
+        <article><span>Prioridade</span><strong id="ai-priority">—</strong></article>
+        <article><span>Modelo</span><strong id="ai-model">—</strong></article>
+      </div>
+      <div class="grid">
+        <section><h3>Requisitos</h3><ul id="ai-requirements"></ul></section>
+        <section><h3>Pendências</h3><ul id="ai-pending"></ul></section>
+        <section><h3>Riscos</h3><ul id="ai-risks"></ul></section>
+      </div>
     </section>
 
     <section id="results" hidden>
