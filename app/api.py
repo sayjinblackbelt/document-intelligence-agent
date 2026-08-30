@@ -4,7 +4,7 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 from fastapi import FastAPI, HTTPException, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -12,11 +12,12 @@ from .analyzer import analyze_document, analyze_text_content
 from .extractors import extract_text
 from .ai_analysis import analyze_with_ai
 from .history import get_analysis, list_analyses, save_analysis
+from .report import analysis_json, analysis_markdown, analysis_pdf
 
 app = FastAPI(
     title="Document Intelligence Agent",
     description="API demonstrativa para classificação e análise inicial de documentos.",
-    version="0.6.0",
+    version="0.7.0",
 )
 
 
@@ -176,6 +177,41 @@ def analysis_history_detail(analysis_id: int) -> dict:
     if not record:
         raise HTTPException(status_code=404, detail="Análise não encontrada.")
     return record
+
+
+@app.get("/history/{analysis_id}/export")
+def export_analysis(analysis_id: int, format: str = "json"):
+    """Exporta uma análise persistida em JSON, Markdown ou PDF."""
+    record = get_analysis(analysis_id)
+    if not record:
+        raise HTTPException(status_code=404, detail="Análise não encontrada.")
+
+    normalized = format.lower()
+    filename = Path(record["filename"]).stem or "analysis"
+
+    if normalized == "json":
+        return Response(
+            analysis_json(record),
+            media_type="application/json",
+            headers={"Content-Disposition": f'attachment; filename="{filename}-analysis.json"'},
+        )
+    if normalized in {"md", "markdown"}:
+        return Response(
+            analysis_markdown(record),
+            media_type="text/markdown; charset=utf-8",
+            headers={"Content-Disposition": f'attachment; filename="{filename}-analysis.md"'},
+        )
+    if normalized == "pdf":
+        return Response(
+            analysis_pdf(record),
+            media_type="application/pdf",
+            headers={"Content-Disposition": f'attachment; filename="{filename}-analysis.pdf"'},
+        )
+
+    raise HTTPException(
+        status_code=400,
+        detail="Formatos suportados: json, md e pdf.",
+    )
 
 
 STATIC_DIR = Path(__file__).parent / "static"
