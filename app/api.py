@@ -14,7 +14,7 @@ from .ai_analysis import analyze_with_ai
 app = FastAPI(
     title="Document Intelligence Agent",
     description="API demonstrativa para classificação e análise inicial de documentos.",
-    version="0.2.0",
+    version="0.3.0",
 )
 
 
