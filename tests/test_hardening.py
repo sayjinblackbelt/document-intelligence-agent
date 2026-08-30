@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from fastapi.testclient import TestClient
 
 from app.api import MAX_UPLOAD_BYTES, app
