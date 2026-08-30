@@ -8,7 +8,7 @@
 
 ## Recursos
 
-- 📄 TXT, PDF com texto extraível e DOCX;
+- 📄 TXT, PDF com texto e PDFs escaneados via OCR, e DOCX;
 - 🔎 requisitos, pendências e riscos;
 - 🏷️ classificação e score de completude;
 - 🤖 providers Local, OpenAI e Ollama;
@@ -18,7 +18,9 @@
 - 🌐 interface em Português, English e Español;
 - 🧪 testes automatizados;
 - 🔄 CI com GitHub Actions;
-- 🐳 Docker e healthcheck.
+- 🐳 Docker e healthcheck;
+- 🔐 API Key opcional e JWT para usuários persistentes;
+- 👥 isolamento do histórico por usuário.
 
 ## Início rápido
 
@@ -97,6 +99,14 @@ pytest -q
 docker build -t document-intelligence-agent .
 docker run -p 8000:8000 document-intelligence-agent
 ```
+
+## Autenticação
+
+Para ambiente local, o projeto pode operar sem autenticação. Em deploy protegido, configure `JWT_SECRET` e use `POST /auth/login` para obter um Bearer token. O histórico é filtrado pelo usuário autenticado.
+
+## OCR
+
+PDFs sem texto extraível usam OCR como fallback. No Docker, Tesseract e Poppler são instalados automaticamente.
 
 ## Segurança
 
