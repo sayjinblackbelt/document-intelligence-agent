@@ -135,7 +135,22 @@ POST /analyze/ai
 
 O modo `local` funciona sem chave de API e demonstra a arquitetura assistiva.
 
-> Os resultados da camada de IA não substituem revisão técnica ou decisão humana.
+> A resposta assistida usa um contrato JSON consistente:
+
+```json
+{
+  "resumo_executivo": "...",
+  "requisitos": [],
+  "pendencias": [],
+  "riscos": [],
+  "prioridade_sugerida": "baixa",
+  "revisao_humana_recomendada": true
+}
+```
+
+OpenAI e Ollama são instruídos a retornar JSON, e a API valida a estrutura antes de devolver o resultado.
+
+Os resultados da camada de IA não substituem revisão técnica ou decisão humana.
 
 Para detalhes adicionais, consulte a [Documentação da API](docs/API.md).
 
@@ -237,7 +252,7 @@ document-intelligence-agent/
 - [x] suporte a DOCX;
 - [x] testes automatizados;
 - [x] interface web;
-- [x] camada local de IA assistida;\n- [x] arquitetura de adaptadores de IA;\n- [x] integração opcional com OpenAI;\n- [x] integração opcional com Ollama;
+- [x] camada local de IA assistida;\n- [x] arquitetura de adaptadores de IA;\n- [x] integração opcional com OpenAI;\n- [x] integração opcional com Ollama;\n- [x] contrato JSON estruturado para análises de IA;
 - [x] Docker;
 - [x] CI com GitHub Actions.
 
