@@ -14,7 +14,8 @@ from .analyzer import analyze_document, analyze_text_content
 from .extractors import extract_text
 from .ai_analysis import analyze_with_ai
 from .history import get_analysis, list_analyses, save_analysis
-from .auth import api_key_enabled, require_user
+from .auth import auth_status, login, require_user
+from .users import create_user
 from .report import analysis_json, analysis_markdown, analysis_pdf
 
 ALLOWED_EXTENSIONS = {".txt", ".pdf", ".docx"}
@@ -51,7 +52,7 @@ async def read_upload(file: UploadFile) -> tuple[str, bytes]:
 app = FastAPI(
     title="Document Intelligence Agent",
     description="API demonstrativa para classificação e análise inicial de documentos.",
-    version="1.1.0",
+    version="1.2.0",
 )
 
 
@@ -103,6 +104,15 @@ class AITextDocument(BaseModel):
     language: str = "pt"
 
 
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+class UserCreateRequest(LoginRequest):
+    role: str = "user"
+
+
 class TextDocument(BaseModel):
     filename: str = "documento.txt"
     content: str
@@ -114,8 +124,25 @@ def health() -> dict:
 
 
 @app.get("/auth/status")
-def auth_status() -> dict:
-    return {"authentication_enabled": api_key_enabled()}
+def auth_status_endpoint() -> dict:
+    return auth_status()
+
+
+@app.post("/auth/login")
+def auth_login(credentials: LoginRequest) -> dict:
+    return login(credentials.username, credentials.password)
+
+
+@app.post("/auth/register")
+def auth_register(payload: UserCreateRequest, request: Request) -> dict:
+    current = require_user(request)
+    if current.role != "admin":
+        raise HTTPException(status_code=403, detail="Acesso negado.")
+    try:
+        user = create_user(payload.username, payload.password, payload.role)
+        return {"id": user["id"], "username": user["username"], "role": user["role"]}
+    except Exception as error:
+        raise HTTPException(status_code=400, detail="Não foi possível criar o usuário.") from error
 
 
 @app.post("/analyze/text")
