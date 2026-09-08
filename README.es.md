@@ -59,4 +59,7 @@ La automatización apoya el análisis; la responsabilidad humana sigue siendo es
 
 ## Autor
 
-**Filipe Gimenes de Morais**
+**Filipe G Morais**
+
+GitHub: https://github.com/sayjinblackbelt  
+Repository: https://github.com/sayjinblackbelt/document-intelligence-agent
