@@ -65,4 +65,11 @@ This repository is a portfolio/demo project. Production use should add authentic
 
 ## Author
 
-**Filipe Gimenes de Morais**
+**Filipe G Morais**
+
+## Author
+
+**Filipe G Morais**
+
+GitHub: https://github.com/sayjinblackbelt  
+Repository: https://github.com/sayjinblackbelt/document-intelligence-agent
