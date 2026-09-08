@@ -137,11 +137,9 @@ Este projeto é demonstrativo. Antes de uso em produção, recomenda-se implemen
 
 **Filipe G Morais**
 
----
-
-## Author
-
-**Filipe G Morais**
-
 GitHub: https://github.com/sayjinblackbelt  
 Repository: https://github.com/sayjinblackbelt/document-intelligence-agent
+
+## Licença
+
+Este projeto é disponibilizado para fins educacionais e demonstrativos. Consulte o arquivo `LICENSE` para os termos de uso.
